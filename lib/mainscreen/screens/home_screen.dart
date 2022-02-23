@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:scanner/enums/status.dart';
 import 'package:scanner/enums/store_state.dart';
 // import 'package:scanner/mainscreen/repository/orders_repository.dart';
 import 'package:provider/provider.dart';
+import 'package:scanner/mainscreen/repository/orders_repository.dart';
 import 'package:scanner/mainscreen/store/orders_store.dart';
 
 class Home extends StatefulWidget {
@@ -78,6 +80,7 @@ class _HomeState extends State<Home> {
                 Observer(builder: (_) {
                   final ordersList = store.newOrders;
                   final state = store.storeState;
+                  final _repository = OrdersRepository();
                   switch (state) {
                     case StoreState.LOADING:
                       return const Center(
@@ -95,22 +98,31 @@ class _HomeState extends State<Home> {
                           itemCount: ordersList.length,
                           itemBuilder: (context, index) {
                             final model = ordersList[index];
-                            return Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Container(
-                                padding: const EdgeInsets.all(10),
-                                decoration: BoxDecoration(
-                                    shape: BoxShape.rectangle,
-                                    borderRadius: BorderRadius.circular(10),
-                                    color: Colors.amber),
-                                child: Row(
-                                  children: [
-                                    Text(model.fname),
-                                    const SizedBox(
-                                      width: 10,
-                                    ),
-                                    Text(model.email),
-                                  ],
+                            return GestureDetector(
+                              onTap: () async {
+                                final pendingModel = model.copyWith(
+                                    status: Status.PENDING.inString());
+                                await _repository.addPendingData(
+                                    model: pendingModel);
+                                print('Navigated');
+                              },
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Container(
+                                  padding: const EdgeInsets.all(10),
+                                  decoration: BoxDecoration(
+                                      shape: BoxShape.rectangle,
+                                      borderRadius: BorderRadius.circular(10),
+                                      color: Colors.amber),
+                                  child: Row(
+                                    children: [
+                                      Text(model.firstName),
+                                      const SizedBox(
+                                        width: 10,
+                                      ),
+                                      Text(model.email),
+                                    ],
+                                  ),
                                 ),
                               ),
                             );
@@ -129,7 +141,69 @@ class _HomeState extends State<Home> {
                       ));
                   }
                 }),
-                const Center(child: Text('Pending')),
+                // const Center(child: Text('Pending')),
+                Observer(builder: (_) {
+                  final ordersList = store.pendingOrders;
+                  final state = store.storeState;
+                  switch (state) {
+                    case StoreState.LOADING:
+                      return const Center(
+                        child: SizedBox(
+                          height: 50,
+                          width: 50,
+                          child: CircularProgressIndicator(
+                            color: Colors.black,
+                          ),
+                        ),
+                      );
+                    case StoreState.SUCCESS:
+                      return ListView.builder(
+                          physics: const BouncingScrollPhysics(),
+                          itemCount: ordersList.length,
+                          itemBuilder: (context, index) {
+                            final model = ordersList[index];
+                            return GestureDetector(
+                              onTap: () async {
+                                final pendingModel = model.copyWith(
+                                    status: Status.COMPLETED.inString());
+                                await store.uploadDummy(model: pendingModel);
+                                print('Navigated');
+                              },
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Container(
+                                  padding: const EdgeInsets.all(10),
+                                  decoration: BoxDecoration(
+                                      shape: BoxShape.rectangle,
+                                      borderRadius: BorderRadius.circular(10),
+                                      color: Colors.amber),
+                                  child: Row(
+                                    children: [
+                                      Text(model.firstName),
+                                      const SizedBox(
+                                        width: 10,
+                                      ),
+                                      Text(model.email),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            );
+                          });
+                    case StoreState.ERROR:
+                      return const SizedBox();
+                    case StoreState.EMPTY:
+                      return const Center(
+                          child: SizedBox(
+                        height: 50,
+                        child: Text(
+                          "Nothing's Here",
+                          style: TextStyle(
+                              fontSize: 25, fontWeight: FontWeight.w500),
+                        ),
+                      ));
+                  }
+                }),
                 const Center(child: Text('Completed')),
               ]),
             ),

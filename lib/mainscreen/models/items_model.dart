@@ -25,6 +25,22 @@ class ItemsModel {
     );
   }
 
+  Map<String, dynamic> toMap() {
+    final list = <Map<String, dynamic>>[];
+    for (final i in productModelList) {
+      final model = i.toMap();
+      list.add(model);
+    }
+
+    return {
+      "quantity": quantity,
+      "subTotal": subTotal,
+      "total": total,
+      "taxPrice": taxPrice,
+      "productModelList": list,
+    };
+  }
+
   // "totals": {
   //           "discount": 0,
   //           "quantity": 3,
@@ -58,6 +74,15 @@ class ProductModel {
       imageUrl: image['src'] as String,
       price: double.parse(json['price'].toString()),
     );
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      "collegeName": collegeName,
+      "productId": productId,
+      "imageUrl": imageUrl,
+      "price": price,
+    };
   }
 
   final String collegeName;

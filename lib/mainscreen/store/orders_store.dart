@@ -8,10 +8,13 @@ part 'orders_store.g.dart';
 class OrdersStore = _OrdersStore with _$OrdersStore;
 
 abstract class _OrdersStore with Store {
-  final _ordersRepository = OrdersRepository();
+  final _repository = OrdersRepository();
 
   @observable
   ObservableList<OrdersModel> newOrders = ObservableList.of([]);
+
+  @observable
+  ObservableList<OrdersModel> pendingOrders = ObservableList.of([]);
 
   @observable
   StoreState storeState = StoreState.SUCCESS;
@@ -20,18 +23,28 @@ abstract class _OrdersStore with Store {
   int selectedTabIndex = 0;
 
   @action
-  Future<void> getNewOrders() async {
+  Future<void> init() async {
     try {
       storeState = StoreState.LOADING;
-      final list = await _ordersRepository.getNewOrdersList();
-      if (list.isNotEmpty) {
-        newOrders.addAll(list);
+      final newList = await _repository.getNewOrdersList();
+      final pendingList = await _repository.getPendingOrdersList();
+      if (newList.isNotEmpty) {
+        newOrders.addAll(newList);
+        pendingOrders.addAll(pendingList);
         storeState = StoreState.SUCCESS;
       } else {
         storeState = StoreState.EMPTY;
       }
     } on Exception catch (_) {
       storeState = StoreState.ERROR;
+    }
+  }
+
+  Future<void> uploadDummy({required OrdersModel model}) async {
+    try {
+      _repository.uploadDummyData(model: model);
+    } on Exception catch (_) {
+      print('Exception');
     }
   }
 }

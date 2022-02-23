@@ -21,6 +21,17 @@ class AddressModel {
     );
   }
 
+  Map<String, dynamic> toMap() {
+    return {
+      "addressFormatted": addressFormatted,
+      " city": city,
+      "addressLine": addressLine,
+      // countryCode: address['countryCode'],
+      "postalCode": postalCode,
+      "subDivision": subDivision,
+    };
+  }
+
   final String addressFormatted;
   final String city;
   final String addressLine;
