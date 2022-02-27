@@ -102,8 +102,7 @@ class _HomeState extends State<Home> {
                               onTap: () async {
                                 final pendingModel = model.copyWith(
                                     status: Status.PENDING.inString());
-                                await _repository.addPendingData(
-                                    model: pendingModel);
+                                await store.addPendingData(model: pendingModel);
                                 print('Navigated');
                               },
                               child: Padding(
@@ -116,11 +115,11 @@ class _HomeState extends State<Home> {
                                       color: Colors.amber),
                                   child: Row(
                                     children: [
-                                      Text(model.firstName),
+                                      Text(model.userInfo.firstName),
                                       const SizedBox(
                                         width: 10,
                                       ),
-                                      Text(model.email),
+                                      Text(model.userInfo.email),
                                     ],
                                   ),
                                 ),
@@ -166,7 +165,8 @@ class _HomeState extends State<Home> {
                               onTap: () async {
                                 final pendingModel = model.copyWith(
                                     status: Status.COMPLETED.inString());
-                                await store.uploadDummy(model: pendingModel);
+                                await store.addCompletedData(
+                                    model: pendingModel);
                                 print('Navigated');
                               },
                               child: Padding(
@@ -179,11 +179,11 @@ class _HomeState extends State<Home> {
                                       color: Colors.amber),
                                   child: Row(
                                     children: [
-                                      Text(model.firstName),
+                                      Text(model.userInfo.firstName),
                                       const SizedBox(
                                         width: 10,
                                       ),
-                                      Text(model.email),
+                                      Text(model.userInfo.email),
                                     ],
                                   ),
                                 ),

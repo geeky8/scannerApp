@@ -4,7 +4,7 @@ class ItemsModel {
     required this.subTotal,
     required this.total,
     required this.taxPrice,
-    required this.productModelList,
+    required this.products,
   });
 
   factory ItemsModel.fromJson(
@@ -21,41 +21,35 @@ class ItemsModel {
       subTotal: json['subtotal'] as double,
       total: double.parse(json['total'].toString()),
       taxPrice: json['tax'] as double,
-      productModelList: productsList,
+      products: productsList,
     );
   }
 
   Map<String, dynamic> toMap() {
-    final list = <Map<String, dynamic>>[];
-    for (final i in productModelList) {
-      final model = i.toMap();
-      list.add(model);
-    }
+    // final list = <Map<String, dynamic>>[];
+    // for (final i in products) {
+    //   final model = i.toMap();
+    //   list.add(model);
+    // }
+
+    // print(list.toString());
 
     return {
       "quantity": quantity,
       "subTotal": subTotal,
       "total": total,
       "taxPrice": taxPrice,
-      "productModelList": list,
+      "products": products.map((e) => e.toMap())
+        ..toList()
+        ..toString(),
     };
   }
-
-  // "totals": {
-  //           "discount": 0,
-  //           "quantity": 3,
-  //           "shipping": 0,
-  //           "subtotal": 92.98,
-  //           "tax": 19.52,
-  //           "total": 112.5,
-  //           "weight": 0
-  //       },
 
   final int quantity;
   final double subTotal;
   final double total;
   final double taxPrice;
-  final List<ProductModel> productModelList;
+  final List<ProductModel> products;
 }
 
 class ProductModel {

@@ -1,15 +1,13 @@
 import 'package:scanner/enums/status.dart';
 import 'package:scanner/mainscreen/models/address_model.dart';
 import 'package:scanner/mainscreen/models/items_model.dart';
+import 'package:scanner/mainscreen/models/user_info_model.dart';
 
 class OrdersModel {
   OrdersModel({
-    required this.firstName,
     required this.createdAt,
-    required this.email,
-    required this.lastName,
     required this.id,
-    required this.contact,
+    required this.userInfo,
     required this.addressModel,
     required this.itemsModel,
     required this.orderStatus,
@@ -17,16 +15,14 @@ class OrdersModel {
 
   factory OrdersModel.fromJson({required Map<String, dynamic> json}) {
     final billingInfo = json['billingInfo'] as Map<String, dynamic>;
+    final userInfo = UserInfoModel.fromMap(json: billingInfo);
     final addressModel = AddressModel.fromJson(address: billingInfo['address']);
     final itemsModel =
         ItemsModel.fromJson(json: json['totals'], lineItems: json['lineItems']);
     return OrdersModel(
-      firstName: billingInfo['firstName'] as String,
       createdAt: json['_dateCreated'] as String,
-      email: billingInfo['email'] as String,
-      lastName: billingInfo['lastName'] as String,
       id: json['_id'] as String,
-      contact: billingInfo['phone'] as String,
+      userInfo: userInfo,
       addressModel: addressModel,
       itemsModel: itemsModel,
       orderStatus: json['status'] ?? Status.NEW.inString(),
@@ -34,13 +30,11 @@ class OrdersModel {
   }
 
   Map<String, dynamic> toMap() {
+    // print(itemsModel.toMap()..toString());
+
     return {
-      "firstName": firstName,
       "_dateCreated": createdAt,
-      "email": email,
-      "lastName": lastName,
       "_id": id,
-      "phone": contact,
       "address": addressModel.toMap(),
       "items": itemsModel.toMap(),
       "orderStatus": orderStatus,
@@ -49,25 +43,19 @@ class OrdersModel {
 
   OrdersModel copyWith({required String status}) {
     return OrdersModel(
-      firstName: firstName,
-      createdAt: createdAt,
-      email: email,
-      lastName: lastName,
+      userInfo: userInfo,
       id: id,
-      contact: contact,
+      createdAt: createdAt,
       addressModel: addressModel,
       itemsModel: itemsModel,
-      orderStatus: (orderStatus == 'new') ? status : orderStatus,
+      orderStatus: status,
     );
   }
 
-  final String firstName;
-  final String lastName;
-  final String contact;
   final String id;
+  final UserInfoModel userInfo;
   final ItemsModel itemsModel;
   final AddressModel addressModel;
   final String createdAt;
-  final String email;
   final String orderStatus;
 }

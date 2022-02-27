@@ -17,18 +17,18 @@ extension StatusExtension on Status {
         return "completed";
     }
   }
+}
 
-  Status status(String status) {
-    switch (status) {
-      case 'new':
-        return Status.NEW;
-      case 'pending':
-        return Status.PENDING;
-      case 'completed':
-        return Status.COMPLETED;
-    }
-    return Status.NEW;
+Status currStatus(String status) {
+  switch (status) {
+    case 'new':
+      return Status.NEW;
+    case 'pending':
+      return Status.PENDING;
+    case 'completed':
+      return Status.COMPLETED;
   }
+  return Status.NEW;
 }
 
 // FulFillmentStatus fulFillmentStatus(String status) {

@@ -27,13 +27,13 @@ mixin _$OrdersStore on _OrdersStore, Store {
   final _$pendingOrdersAtom = Atom(name: '_OrdersStore.pendingOrders');
 
   @override
-  ObservableList<OrdersModel> get pendingOrders {
+  ObservableList<UpdatedOrdersModel> get pendingOrders {
     _$pendingOrdersAtom.reportRead();
     return super.pendingOrders;
   }
 
   @override
-  set pendingOrders(ObservableList<OrdersModel> value) {
+  set pendingOrders(ObservableList<UpdatedOrdersModel> value) {
     _$pendingOrdersAtom.reportWrite(value, super.pendingOrders, () {
       super.pendingOrders = value;
     });

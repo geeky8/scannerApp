@@ -1,6 +1,7 @@
 import 'package:mobx/mobx.dart';
 import 'package:scanner/enums/store_state.dart';
 import 'package:scanner/mainscreen/models/orders_model.dart';
+import 'package:scanner/mainscreen/models/updated_orders_model.dart';
 import 'package:scanner/mainscreen/repository/orders_repository.dart';
 
 part 'orders_store.g.dart';
@@ -14,7 +15,7 @@ abstract class _OrdersStore with Store {
   ObservableList<OrdersModel> newOrders = ObservableList.of([]);
 
   @observable
-  ObservableList<OrdersModel> pendingOrders = ObservableList.of([]);
+  ObservableList<UpdatedOrdersModel> pendingOrders = ObservableList.of([]);
 
   @observable
   StoreState storeState = StoreState.SUCCESS;
@@ -40,9 +41,25 @@ abstract class _OrdersStore with Store {
     }
   }
 
-  Future<void> uploadDummy({required OrdersModel model}) async {
+  // Future<void> uploadDummy({required OrdersModel model}) async {
+  //   try {
+  //     _repository.uploadDummyData(model: model);
+  //   } on Exception catch (_) {
+  //     print('Exception');
+  //   }
+  // }
+
+  Future<void> addPendingData({required OrdersModel model}) async {
     try {
-      _repository.uploadDummyData(model: model);
+      _repository.addPendingData(model: model);
+    } on Exception catch (_) {
+      print('Exception');
+    }
+  }
+
+  Future<void> addCompletedData({required UpdatedOrdersModel model}) async {
+    try {
+      _repository.addCompletedData(model: model);
     } on Exception catch (_) {
       print('Exception');
     }
