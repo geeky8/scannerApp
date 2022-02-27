@@ -21,6 +21,11 @@ class UserInfoModel {
       'lastName': lastName,
       'phone': phone,
       'email': email,
+
+      // 'firstName': jsonEncode(firstName),
+      // 'lastName': jsonEncode(lastName),
+      // 'phone': jsonEncode(phone),
+      // 'email': jsonEncode(email),
     };
   }
 

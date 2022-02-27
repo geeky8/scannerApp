@@ -16,6 +16,13 @@ class ItemsModel {
       productsList.add(model);
     }
 
+    // return ItemsModel(
+    //   quantity: int.parse((json['quantity'] as int).toString() ?? json['quantity'].toString()),
+    //   subTotal: double.parse(json['subtotal'].toString()),
+    //   total: double.parse(json['total'].toString()),
+    //   taxPrice: double.parse(json['tax'].toString()),
+    //   products: productsList,
+    // );
     return ItemsModel(
       quantity: json['quantity'] as int,
       subTotal: json['subtotal'] as double,
@@ -26,22 +33,22 @@ class ItemsModel {
   }
 
   Map<String, dynamic> toMap() {
-    // final list = <Map<String, dynamic>>[];
-    // for (final i in products) {
-    //   final model = i.toMap();
-    //   list.add(model);
-    // }
-
-    // print(list.toString());
-
+    final list = [];
+    for (final i in products) {
+      final model = i.toMap();
+      list.add(model);
+    }
     return {
       "quantity": quantity,
-      "subTotal": subTotal,
+      "subtotal": subTotal,
       "total": total,
-      "taxPrice": taxPrice,
-      "products": products.map((e) => e.toMap())
-        ..toList()
-        ..toString(),
+      "tax": taxPrice,
+      "products": list,
+      // "quantity": jsonEncode(quantity),
+      // "subtotal": jsonEncode(subTotal),
+      // "total": jsonEncode(total),
+      // "tax": jsonEncode(taxPrice),
+      // "products": jsonEncode([...products]),
     };
   }
 
@@ -56,16 +63,13 @@ class ProductModel {
   ProductModel({
     required this.collegeName,
     required this.productId,
-    required this.imageUrl,
     required this.price,
   });
 
   factory ProductModel.fromJson({required Map<String, dynamic> json}) {
-    final image = json['mediaItem'] as Map<String, dynamic>;
     return ProductModel(
       collegeName: json['name'] as String,
-      productId: json['productId'],
-      imageUrl: image['src'] as String,
+      productId: json['productId'] as String,
       price: double.parse(json['price'].toString()),
     );
   }
@@ -74,7 +78,6 @@ class ProductModel {
     return {
       "collegeName": collegeName,
       "productId": productId,
-      "imageUrl": imageUrl,
       "price": price,
     };
   }
@@ -82,5 +85,4 @@ class ProductModel {
   final String collegeName;
   final String productId;
   final double price;
-  final String imageUrl;
 }

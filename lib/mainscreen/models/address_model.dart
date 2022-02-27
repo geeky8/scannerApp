@@ -23,12 +23,18 @@ class AddressModel {
 
   Map<String, dynamic> toMap() {
     return {
-      "addressFormatted": addressFormatted,
-      " city": city,
+      "formatted": addressFormatted,
+      "city": city,
       "addressLine": addressLine,
       // countryCode: address['countryCode'],
       "postalCode": postalCode,
-      "subDivision": subDivision,
+      "subdivision": subDivision,
+      // "formatted": jsonEncode(addressFormatted),
+      // "city": jsonEncode(city),
+      // "addressLine": jsonEncode(addressLine),
+      // // countryCode: address['countryCode'],
+      // "postalCode": jsonEncode(postalCode),
+      // "subdivision": jsonEncode(subDivision),
     };
   }
 

@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:scanner/enums/status.dart';
 import 'package:scanner/mainscreen/models/address_model.dart';
 import 'package:scanner/mainscreen/models/items_model.dart';
@@ -14,11 +16,28 @@ class OrdersModel {
   });
 
   factory OrdersModel.fromJson({required Map<String, dynamic> json}) {
-    final billingInfo = json['billingInfo'] as Map<String, dynamic>;
-    final userInfo = UserInfoModel.fromMap(json: billingInfo);
-    final addressModel = AddressModel.fromJson(address: billingInfo['address']);
-    final itemsModel =
-        ItemsModel.fromJson(json: json['totals'], lineItems: json['lineItems']);
+    UserInfoModel userInfo;
+    AddressModel addressModel;
+    ItemsModel itemsModel;
+
+    // Map<String, dynamic> billingInfo = {};
+    if (json['status'] == null) {
+      final billingInfo = json['billingInfo'] as Map<String, dynamic>;
+      userInfo = UserInfoModel.fromMap(json: billingInfo);
+      addressModel = AddressModel.fromJson(address: billingInfo['address']);
+      itemsModel = ItemsModel.fromJson(
+          json: json['totals'], lineItems: json['lineItems']);
+    } else {
+      userInfo = UserInfoModel.fromMap(
+          json: jsonDecode(json['userInfo'] as String) as Map<String, dynamic>);
+      addressModel = AddressModel.fromJson(
+          address:
+              jsonDecode(json['address'] as String) as Map<String, dynamic>);
+      itemsModel = ItemsModel.fromJson(
+          json: jsonDecode(json['items'] as String) as Map<String, dynamic>,
+          lineItems: []);
+    }
+
     return OrdersModel(
       createdAt: json['_dateCreated'] as String,
       id: json['_id'] as String,
@@ -35,8 +54,8 @@ class OrdersModel {
     return {
       "_dateCreated": createdAt,
       "_id": id,
-      "address": addressModel.toMap(),
-      "items": itemsModel.toMap(),
+      "address": jsonEncode(addressModel.toMap()),
+      "items": jsonEncode(itemsModel.toMap()),
       "orderStatus": orderStatus,
     };
   }
