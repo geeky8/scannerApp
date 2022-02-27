@@ -24,19 +24,86 @@ mixin _$OrdersStore on _OrdersStore, Store {
     });
   }
 
-  final _$storeStateAtom = Atom(name: '_OrdersStore.storeState');
+  final _$pendingOrdersAtom = Atom(name: '_OrdersStore.pendingOrders');
 
   @override
-  StoreState get storeState {
-    _$storeStateAtom.reportRead();
-    return super.storeState;
+  ObservableList<OrdersModel> get pendingOrders {
+    _$pendingOrdersAtom.reportRead();
+    return super.pendingOrders;
   }
 
   @override
-  set storeState(StoreState value) {
-    _$storeStateAtom.reportWrite(value, super.storeState, () {
-      super.storeState = value;
+  set pendingOrders(ObservableList<OrdersModel> value) {
+    _$pendingOrdersAtom.reportWrite(value, super.pendingOrders, () {
+      super.pendingOrders = value;
     });
+  }
+
+  final _$newStateAtom = Atom(name: '_OrdersStore.newState');
+
+  @override
+  StoreState get newState {
+    _$newStateAtom.reportRead();
+    return super.newState;
+  }
+
+  @override
+  set newState(StoreState value) {
+    _$newStateAtom.reportWrite(value, super.newState, () {
+      super.newState = value;
+    });
+  }
+
+  final _$pendingStateAtom = Atom(name: '_OrdersStore.pendingState');
+
+  @override
+  StoreState get pendingState {
+    _$pendingStateAtom.reportRead();
+    return super.pendingState;
+  }
+
+  @override
+  set pendingState(StoreState value) {
+    _$pendingStateAtom.reportWrite(value, super.pendingState, () {
+      super.pendingState = value;
+    });
+  }
+
+  final _$completedStateAtom = Atom(name: '_OrdersStore.completedState');
+
+  @override
+  StoreState get completedState {
+    _$completedStateAtom.reportRead();
+    return super.completedState;
+  }
+
+  @override
+  set completedState(StoreState value) {
+    _$completedStateAtom.reportWrite(value, super.completedState, () {
+      super.completedState = value;
+    });
+  }
+
+  final _$selectedTabIndexAtom = Atom(name: '_OrdersStore.selectedTabIndex');
+
+  @override
+  int get selectedTabIndex {
+    _$selectedTabIndexAtom.reportRead();
+    return super.selectedTabIndex;
+  }
+
+  @override
+  set selectedTabIndex(int value) {
+    _$selectedTabIndexAtom.reportWrite(value, super.selectedTabIndex, () {
+      super.selectedTabIndex = value;
+    });
+  }
+
+  final _$initAsyncAction = AsyncAction('_OrdersStore.init');
+
+  @override
+  Future<void> init() {
+    return _$initAsyncAction.run(() => super.init());
   }
 
   final _$getNewOrdersAsyncAction = AsyncAction('_OrdersStore.getNewOrders');
@@ -46,11 +113,23 @@ mixin _$OrdersStore on _OrdersStore, Store {
     return _$getNewOrdersAsyncAction.run(() => super.getNewOrders());
   }
 
+  final _$getPendingOrdersAsyncAction =
+      AsyncAction('_OrdersStore.getPendingOrders');
+
+  @override
+  Future<void> getPendingOrders() {
+    return _$getPendingOrdersAsyncAction.run(() => super.getPendingOrders());
+  }
+
   @override
   String toString() {
     return '''
 newOrders: ${newOrders},
-storeState: ${storeState}
+pendingOrders: ${pendingOrders},
+newState: ${newState},
+pendingState: ${pendingState},
+completedState: ${completedState},
+selectedTabIndex: ${selectedTabIndex}
     ''';
   }
 }

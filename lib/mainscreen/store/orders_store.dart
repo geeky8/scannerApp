@@ -8,30 +8,84 @@ part 'orders_store.g.dart';
 class OrdersStore = _OrdersStore with _$OrdersStore;
 
 abstract class _OrdersStore with Store {
-  final _ordersRepository = OrdersRepository();
+  final _repository = OrdersRepository();
 
   @observable
   ObservableList<OrdersModel> newOrders = ObservableList.of([]);
 
   @observable
-  StoreState storeState = StoreState.SUCCESS;
+  ObservableList<OrdersModel> pendingOrders = ObservableList.of([]);
+
+  @observable
+  StoreState newState = StoreState.SUCCESS;
+
+  @observable
+  StoreState pendingState = StoreState.SUCCESS;
+
+  @observable
+  StoreState completedState = StoreState.SUCCESS;
 
   @observable
   int selectedTabIndex = 0;
 
   @action
+  Future<void> init() async {
+    await getNewOrders();
+    await getPendingOrders();
+  }
+
+  @action
   Future<void> getNewOrders() async {
     try {
-      storeState = StoreState.LOADING;
-      final list = await _ordersRepository.getNewOrdersList();
-      if (list.isNotEmpty) {
-        newOrders.addAll(list);
-        storeState = StoreState.SUCCESS;
+      newState = StoreState.LOADING;
+      final newList = await _repository.getNewOrdersList();
+      // final pendingList = await _repository.getPendingOrdersList();
+      if (newList.isNotEmpty) {
+        newOrders.addAll(newList);
+        // pendingOrders.addAll(pendingList);
+        newState = StoreState.SUCCESS;
       } else {
-        storeState = StoreState.EMPTY;
+        newState = StoreState.EMPTY;
       }
     } on Exception catch (_) {
-      storeState = StoreState.ERROR;
+      newState = StoreState.ERROR;
+    }
+  }
+
+  @action
+  Future<void> getPendingOrders() async {
+    try {
+      pendingState = StoreState.LOADING;
+      // final newList = await _repository.getNewOrdersList();
+      final pendingList = await _repository.getPendingOrdersList();
+      if (pendingList.isNotEmpty) {
+        pendingOrders.addAll(pendingList);
+        // pendingOrders.addAll(pendingList);
+        pendingState = StoreState.SUCCESS;
+      } else {
+        pendingState = StoreState.EMPTY;
+      }
+    } on Exception catch (_) {
+      pendingState = StoreState.ERROR;
+    }
+  }
+
+  Future<void> addPendingData({required OrdersModel model}) async {
+    try {
+      await _repository.addPendingData(model: model);
+      final index = newOrders.indexWhere((element) => element.id == model.id);
+      newOrders.removeAt(index);
+      pendingOrders.insert(0, model);
+    } on Exception catch (_) {
+      print('Exception');
+    }
+  }
+
+  Future<void> addCompletedData({required OrdersModel model}) async {
+    try {
+      _repository.addCompletedData(model: model);
+    } on Exception catch (_) {
+      print('Exception');
     }
   }
 }

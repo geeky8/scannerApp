@@ -19,7 +19,7 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
       ),
       home: MultiProvider(providers: [
-        Provider(create: (_) => OrdersStore()..getNewOrders()),
+        Provider(create: (_) => OrdersStore()..init()),
       ], child: const Home()),
     );
   }
