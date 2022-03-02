@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:scanner/mainscreen/screens/home_screen.dart';
-import 'package:scanner/mainscreen/store/orders_store.dart';
+import 'package:scanner/mainscreen/store/orders/orders_store.dart';
 
 void main() {
   runApp(const MyApp());

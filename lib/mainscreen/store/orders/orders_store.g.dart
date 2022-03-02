@@ -84,6 +84,51 @@ mixin _$OrdersStore on _OrdersStore, Store {
     });
   }
 
+  final _$fileStateAtom = Atom(name: '_OrdersStore.fileState');
+
+  @override
+  FileState get fileState {
+    _$fileStateAtom.reportRead();
+    return super.fileState;
+  }
+
+  @override
+  set fileState(FileState value) {
+    _$fileStateAtom.reportWrite(value, super.fileState, () {
+      super.fileState = value;
+    });
+  }
+
+  final _$buttonStateAtom = Atom(name: '_OrdersStore.buttonState');
+
+  @override
+  ButtonState get buttonState {
+    _$buttonStateAtom.reportRead();
+    return super.buttonState;
+  }
+
+  @override
+  set buttonState(ButtonState value) {
+    _$buttonStateAtom.reportWrite(value, super.buttonState, () {
+      super.buttonState = value;
+    });
+  }
+
+  final _$generateQRListAtom = Atom(name: '_OrdersStore.generateQRList');
+
+  @override
+  ObservableList<OrdersModel> get generateQRList {
+    _$generateQRListAtom.reportRead();
+    return super.generateQRList;
+  }
+
+  @override
+  set generateQRList(ObservableList<OrdersModel> value) {
+    _$generateQRListAtom.reportWrite(value, super.generateQRList, () {
+      super.generateQRList = value;
+    });
+  }
+
   final _$selectedTabIndexAtom = Atom(name: '_OrdersStore.selectedTabIndex');
 
   @override
@@ -129,6 +174,9 @@ pendingOrders: ${pendingOrders},
 newState: ${newState},
 pendingState: ${pendingState},
 completedState: ${completedState},
+fileState: ${fileState},
+buttonState: ${buttonState},
+generateQRList: ${generateQRList},
 selectedTabIndex: ${selectedTabIndex}
     ''';
   }

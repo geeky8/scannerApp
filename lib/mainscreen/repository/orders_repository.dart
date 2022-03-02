@@ -57,7 +57,7 @@ class OrdersRepository {
     final items = jsonEncode(model.itemsModel.toMap());
 
     final _uploadUrl =
-        'https://www.graduationgowns.ie/_functions/orderDummyStatus?userInfo=$userInfo&id=${model.id}&status=${model.orderStatus.toString()}&createdAt=${model.createdAt}&address=$address&items=$items';
+        'https://www.graduationgowns.ie/_functions/orderDummyStatus?userInfo=$userInfo&id=${model.id}&status=${model.orderStatus.toString()}&createdAt=${model.createdAt}&address=$address&items=$items&number=${model.number}';
     final resp = await http.get(Uri.parse(_uploadUrl));
     if (resp.statusCode == 200) {
       print("Successful");

@@ -1,4 +1,6 @@
 import 'package:mobx/mobx.dart';
+import 'package:scanner/enums/button_state.dart';
+import 'package:scanner/enums/file_state.dart';
 import 'package:scanner/enums/store_state.dart';
 import 'package:scanner/mainscreen/models/orders_model.dart';
 import 'package:scanner/mainscreen/repository/orders_repository.dart';
@@ -24,6 +26,15 @@ abstract class _OrdersStore with Store {
 
   @observable
   StoreState completedState = StoreState.SUCCESS;
+
+  @observable
+  FileState fileState = FileState.NORMAL;
+
+  @observable
+  ButtonState buttonState = ButtonState.SUCCESS;
+
+  @observable
+  ObservableList<OrdersModel> generateQRList = ObservableList.of([]);
 
   @observable
   int selectedTabIndex = 0;
@@ -88,4 +99,7 @@ abstract class _OrdersStore with Store {
       print('Exception');
     }
   }
+
+  // @action
+  // void shareQrCode({})
 }

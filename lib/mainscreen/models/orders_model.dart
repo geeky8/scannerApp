@@ -13,6 +13,8 @@ class OrdersModel {
     required this.addressModel,
     required this.itemsModel,
     required this.orderStatus,
+    required this.number,
+    required this.isCheck,
   });
 
   factory OrdersModel.fromJson({required Map<String, dynamic> json}) {
@@ -42,9 +44,11 @@ class OrdersModel {
       createdAt: json['_dateCreated'] as String,
       id: json['_id'] as String,
       userInfo: userInfo,
+      number: int.parse(json['number'].toString()),
       addressModel: addressModel,
       itemsModel: itemsModel,
       orderStatus: json['status'] ?? Status.NEW.inString(),
+      isCheck: false,
     );
   }
 
@@ -60,14 +64,16 @@ class OrdersModel {
     };
   }
 
-  OrdersModel copyWith({required String status}) {
+  OrdersModel copyWith({String? status, bool? isCheck}) {
     return OrdersModel(
       userInfo: userInfo,
       id: id,
       createdAt: createdAt,
       addressModel: addressModel,
       itemsModel: itemsModel,
-      orderStatus: status,
+      number: number,
+      orderStatus: status ?? orderStatus,
+      isCheck: isCheck ?? this.isCheck,
     );
   }
 
@@ -77,4 +83,6 @@ class OrdersModel {
   final AddressModel addressModel;
   final String createdAt;
   final String orderStatus;
+  final int number;
+  final bool isCheck;
 }
