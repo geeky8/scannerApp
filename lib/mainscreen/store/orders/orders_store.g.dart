@@ -39,6 +39,21 @@ mixin _$OrdersStore on _OrdersStore, Store {
     });
   }
 
+  final _$completedOrdersAtom = Atom(name: '_OrdersStore.completedOrders');
+
+  @override
+  ObservableList<OrdersModel> get completedOrders {
+    _$completedOrdersAtom.reportRead();
+    return super.completedOrders;
+  }
+
+  @override
+  set completedOrders(ObservableList<OrdersModel> value) {
+    _$completedOrdersAtom.reportWrite(value, super.completedOrders, () {
+      super.completedOrders = value;
+    });
+  }
+
   final _$newStateAtom = Atom(name: '_OrdersStore.newState');
 
   @override
@@ -166,11 +181,45 @@ mixin _$OrdersStore on _OrdersStore, Store {
     return _$getPendingOrdersAsyncAction.run(() => super.getPendingOrders());
   }
 
+  final _$getCompletedOrdersAsyncAction =
+      AsyncAction('_OrdersStore.getCompletedOrders');
+
+  @override
+  Future<void> getCompletedOrders() {
+    return _$getCompletedOrdersAsyncAction
+        .run(() => super.getCompletedOrders());
+  }
+
+  final _$qrScannerAsyncAction = AsyncAction('_OrdersStore.qrScanner');
+
+  @override
+  Future<OrdersModel> qrScanner() {
+    return _$qrScannerAsyncAction.run(() => super.qrScanner());
+  }
+
+  final _$generateQRCodesAsyncAction =
+      AsyncAction('_OrdersStore.generateQRCodes');
+
+  @override
+  Future<void> generateQRCodes() {
+    return _$generateQRCodesAsyncAction.run(() => super.generateQRCodes());
+  }
+
+  final _$generateQRCodeOrderAsyncAction =
+      AsyncAction('_OrdersStore.generateQRCodeOrder');
+
+  @override
+  Future<void> generateQRCodeOrder({required OrdersModel model}) {
+    return _$generateQRCodeOrderAsyncAction
+        .run(() => super.generateQRCodeOrder(model: model));
+  }
+
   @override
   String toString() {
     return '''
 newOrders: ${newOrders},
 pendingOrders: ${pendingOrders},
+completedOrders: ${completedOrders},
 newState: ${newState},
 pendingState: ${pendingState},
 completedState: ${completedState},
