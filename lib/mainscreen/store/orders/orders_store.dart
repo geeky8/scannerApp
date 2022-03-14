@@ -110,26 +110,28 @@ abstract class _OrdersStore with Store {
     }
   }
 
+  @action
   Future<void> addPendingData({required OrdersModel model}) async {
     try {
       final initModel = model.copyWith(status: 'pending');
       await _repository.moveData(model: initModel);
-      final index = newOrders.indexWhere((element) => element.id == model.id);
-      newOrders.removeAt(index);
-      pendingOrders.insert(0, model);
+      // final index = newOrders.indexWhere((element) => element.id == model.id);
+      // newOrders.removeAt(index);
+      // pendingOrders.insert(0, model);
     } on Exception catch (_) {
       print('Exception');
     }
   }
 
+  @action
   Future<void> addCompletedData({required OrdersModel model}) async {
     try {
       final initModel = model.copyWith(status: 'completed');
       await _repository.moveData(model: initModel);
-      final index =
-          pendingOrders.indexWhere((element) => element.id == model.id);
-      pendingOrders.removeAt(index);
-      completedOrders.insert(0, model);
+      // final index =
+      //     pendingOrders.indexWhere((element) => element.id == model.id);
+      // pendingOrders.removeAt(index);
+      // completedOrders.insert(0, model);
     } on Exception catch (_) {
       print('Exception');
     }
@@ -162,24 +164,27 @@ abstract class _OrdersStore with Store {
 
     List<ByteData> imageData = [];
 
-    final start = list[0].number;
-    final end = list.last.number;
+    final start = list[0].itemsModel.number;
+    final end = list.last.itemsModel.number;
 
     for (final model in list) {
       final image = await _repository.toImage(data: model.id);
       imageData.add(image!);
+      await _repository.moveData(model: model);
     }
     pdf = _repository.createPDF(imageData: imageData);
     await Printing.sharePdf(
-            bytes: await pdf.save(), filename: 'Document ($start-$end).pdf')
+            bytes: await pdf.save(), filename: '($start-$end).pdf')
         .then((value) => print("Done"));
 
     buttonState = ButtonState.SUCCESS;
   }
 
   @action
-  Future<void> generateQRCodeOrder({required OrdersModel model}) async {
+  Future<void> generateOrderQRCode({required OrdersModel model}) async {
     pw.Document pdf = pw.Document();
+
+    buttonState = ButtonState.LOADING;
     final img = await _repository.toImage(data: model.id);
 
     final image = pw.MemoryImage(
@@ -190,9 +195,11 @@ abstract class _OrdersStore with Store {
           return pw.Center(child: pw.Image(image));
         }));
     final file = await _repository.fileConverter(pdf: pdf);
+    await _repository.moveData(model: model);
     await Printing.sharePdf(
-            bytes: await pdf.save(), filename: 'Document ${model.number}.pdf')
+            bytes: await pdf.save(), filename: '${model.itemsModel.number}.pdf')
         .then((value) => print("Done"));
+    buttonState = ButtonState.SUCCESS;
   }
 
   // @action

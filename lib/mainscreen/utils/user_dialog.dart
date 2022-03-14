@@ -34,14 +34,23 @@ class UserDialog extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const CircleAvatar(
-                  child: Icon(
-                    Icons.person,
-                    color: Colors.white,
-                    size: 70,
+                // const CircleAvatar(
+                //   child: Icon(
+                //     Icons.person,
+                //     color: Colors.white,
+                //     size: 70,
+                //   ),
+                //   backgroundColor: primaryColor,
+                //   radius: 60,
+                // ),
+                Container(
+                  height: 150,
+                  width: 150,
+                  child: Image.asset(
+                    'assets/images/notes.png',
+                    fit: BoxFit.cover,
                   ),
-                  backgroundColor: primaryColor,
-                  radius: 60,
+                  decoration: const BoxDecoration(shape: BoxShape.circle),
                 ),
                 const SizedBox(
                   height: 40,
@@ -55,7 +64,7 @@ class UserDialog extends StatelessWidget {
                   child: Column(
                     children: [
                       DialogText(
-                        text: '${model.number}',
+                        text: '${model.itemsModel.number}',
                         icon: Icons.format_list_bulleted,
                       ),
                       const SizedBox(
@@ -109,10 +118,12 @@ class StateButton extends StatelessWidget {
         switch (state) {
           case Status.NEW:
             await store.addPendingData(model: model);
+            await store.getPendingOrders();
             Navigator.pop(context);
             break;
           case Status.PENDING:
             await store.addCompletedData(model: model);
+            await store.getCompletedOrders();
             Navigator.pop(context);
             break;
           case Status.COMPLETED:

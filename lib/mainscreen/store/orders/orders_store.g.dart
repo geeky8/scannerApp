@@ -190,6 +190,24 @@ mixin _$OrdersStore on _OrdersStore, Store {
         .run(() => super.getCompletedOrders());
   }
 
+  final _$addPendingDataAsyncAction =
+      AsyncAction('_OrdersStore.addPendingData');
+
+  @override
+  Future<void> addPendingData({required OrdersModel model}) {
+    return _$addPendingDataAsyncAction
+        .run(() => super.addPendingData(model: model));
+  }
+
+  final _$addCompletedDataAsyncAction =
+      AsyncAction('_OrdersStore.addCompletedData');
+
+  @override
+  Future<void> addCompletedData({required OrdersModel model}) {
+    return _$addCompletedDataAsyncAction
+        .run(() => super.addCompletedData(model: model));
+  }
+
   final _$qrScannerAsyncAction = AsyncAction('_OrdersStore.qrScanner');
 
   @override
@@ -205,13 +223,13 @@ mixin _$OrdersStore on _OrdersStore, Store {
     return _$generateQRCodesAsyncAction.run(() => super.generateQRCodes());
   }
 
-  final _$generateQRCodeOrderAsyncAction =
-      AsyncAction('_OrdersStore.generateQRCodeOrder');
+  final _$generateOrderQRCodeAsyncAction =
+      AsyncAction('_OrdersStore.generateOrderQRCode');
 
   @override
-  Future<void> generateQRCodeOrder({required OrdersModel model}) {
-    return _$generateQRCodeOrderAsyncAction
-        .run(() => super.generateQRCodeOrder(model: model));
+  Future<void> generateOrderQRCode({required OrdersModel model}) {
+    return _$generateOrderQRCodeAsyncAction
+        .run(() => super.generateOrderQRCode(model: model));
   }
 
   @override

@@ -86,7 +86,7 @@ class OrderDetailScreen extends StatelessWidget {
                         children: [
                           TextBlock(
                             label: 'Order No.# :',
-                            text: model.number.toString(),
+                            text: model.itemsModel.number.toString(),
                           ),
                           const SizedBox(
                             height: 10,
@@ -116,6 +116,13 @@ class OrderDetailScreen extends StatelessWidget {
                           TextBlock(
                             label: 'Quantity :',
                             text: model.itemsModel.quantity.toString(),
+                          ),
+                          const SizedBox(
+                            height: 10,
+                          ),
+                          TextBlock(
+                            label: 'College :',
+                            text: model.collegeName,
                           ),
                           // const SizedBox(
                           //   height: 10,
@@ -203,7 +210,7 @@ class OrderQrCodeGen extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () async {
-        await store.generateQRCodeOrder(model: model);
+        await store.generateOrderQRCode(model: model);
       },
       child: Container(
         // padding: const EdgeInsets.symmetric(horizontal: 35, vertical: 15),
@@ -218,8 +225,12 @@ class OrderQrCodeGen extends StatelessWidget {
 
           switch (state) {
             case ButtonState.LOADING:
-              return const CircularProgressIndicator(
-                color: Colors.white,
+              return const SizedBox(
+                height: 50,
+                width: 50,
+                child: CircularProgressIndicator(
+                  color: Colors.white,
+                ),
               );
             case ButtonState.SUCCESS:
               return const Text(

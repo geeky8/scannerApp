@@ -8,6 +8,8 @@ import 'package:qr_flutter/qr_flutter.dart';
 import 'package:flutter/services.dart';
 import 'dart:io' as File;
 
+import 'package:scanner/mainscreen/utils/constants.dart';
+
 class OrdersRepository {
   final _newOrdersUrl = 'https://www.graduationgowns.ie/_functions/orderslist';
   final _pendingOrdersUrl =
@@ -80,8 +82,10 @@ class OrdersRepository {
     final address = jsonEncode(model.addressModel.toMap());
     final items = jsonEncode(model.itemsModel.toMap());
 
+    final collegeName = collegeToColList[model.collegeName];
+
     final _uploadUrl =
-        'https://www.graduationgowns.ie/_functions/orderDummyStatus?userInfo=$userInfo&id=${model.id}&status=${model.orderStatus.toString()}&createdAt=${model.createdAt}&address=$address&items=$items&number=${model.number}';
+        'https://www.graduationgowns.ie/_functions/orderDummyStatus?userInfo=$userInfo&id=${model.id}&status=${model.orderStatus.toString()}&createdAt=${model.createdAt}&address=$address&items=$items&collegeName=$collegeName';
     final resp = await http.get(Uri.parse(_uploadUrl));
     if (resp.statusCode == 200) {
       print("Successful");
@@ -95,6 +99,8 @@ class OrdersRepository {
         'https://www.graduationgowns.ie/_functions/orderqrdetail?id=$id';
     final resp = await http.get(Uri.parse(_url));
     if (resp.statusCode == 200) {
+      print(resp.body);
+      print(1);
       final data = jsonDecode(resp.body) as Map<String, dynamic>;
       final model = OrdersModel.fromJson(json: data);
       return model;

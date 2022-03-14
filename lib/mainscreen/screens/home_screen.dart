@@ -1,13 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 
 import 'package:flutter_mobx/flutter_mobx.dart';
 
 import 'package:provider/provider.dart';
-import 'package:scanner/enums/button_state.dart';
 
 import 'package:scanner/enums/file_state.dart';
-import 'package:scanner/enums/status.dart';
 import 'package:scanner/enums/store_state.dart';
 import 'package:scanner/mainscreen/models/orders_model.dart';
 import 'package:scanner/mainscreen/screens/order_detail_screen.dart';
@@ -16,7 +13,7 @@ import 'package:scanner/mainscreen/store/orders/orders_store.dart';
 import 'package:scanner/mainscreen/utils/constants.dart';
 import 'package:scanner/mainscreen/utils/user_dialog.dart';
 import 'package:scanner/mainscreen/widgets/generate_qr_button.dart';
-import 'package:scanner/mainscreen/widgets/order_details.dart';
+import 'package:scanner/mainscreen/widgets/order_details_card.dart';
 import 'package:scanner/mainscreen/widgets/orders_checkbox.dart';
 
 class Home extends StatefulWidget {
@@ -194,13 +191,12 @@ class _HomeState extends State<Home> {
                           case StoreState.ERROR:
                             return const SizedBox();
                           case StoreState.EMPTY:
-                            return const Center(
+                            return Center(
                                 child: SizedBox(
-                              height: 50,
-                              child: Text(
-                                "Nothing's Here",
-                                style: TextStyle(
-                                    fontSize: 25, fontWeight: FontWeight.w500),
+                              height: 150,
+                              child: Image.asset(
+                                'assets/images/empty.png',
+                                fit: BoxFit.fill,
                               ),
                             ));
                         }
@@ -272,13 +268,12 @@ class _HomeState extends State<Home> {
                           case StoreState.ERROR:
                             return const SizedBox();
                           case StoreState.EMPTY:
-                            return const Center(
+                            return Center(
                                 child: SizedBox(
-                              height: 50,
-                              child: Text(
-                                "Nothing's Here",
-                                style: TextStyle(
-                                    fontSize: 25, fontWeight: FontWeight.w500),
+                              height: 150,
+                              child: Image.asset(
+                                'assets/images/empty.png',
+                                fit: BoxFit.fill,
                               ),
                             ));
                         }
@@ -350,13 +345,12 @@ class _HomeState extends State<Home> {
                           case StoreState.ERROR:
                             return const SizedBox();
                           case StoreState.EMPTY:
-                            return const Center(
+                            return Center(
                                 child: SizedBox(
-                              height: 50,
-                              child: Text(
-                                "Nothing's Here",
-                                style: TextStyle(
-                                    fontSize: 25, fontWeight: FontWeight.w500),
+                              height: 150,
+                              child: Image.asset(
+                                'assets/images/empty.png',
+                                fit: BoxFit.fill,
                               ),
                             ));
                         }

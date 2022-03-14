@@ -63,7 +63,7 @@ class QRCodeWidget extends StatelessWidget {
         ),
         GestureDetector(
           onTap: () async {
-            await shareQRPng(number: model.number);
+            await shareQRPng(number: model.itemsModel.number);
           },
           child: Container(
             padding: const EdgeInsets.all(8),

@@ -5,10 +5,13 @@ class ItemsModel {
     required this.total,
     required this.taxPrice,
     required this.products,
+    required this.number,
   });
 
   factory ItemsModel.fromJson(
-      {required Map<String, dynamic> json, required List<dynamic> lineItems}) {
+      {required Map<String, dynamic> json,
+      required List<dynamic> lineItems,
+      required String number}) {
     final productsList = <ProductModel>[];
     for (final items in lineItems) {
       final json = items as Map<String, dynamic>;
@@ -29,6 +32,7 @@ class ItemsModel {
       total: double.parse(json['total'].toString()),
       taxPrice: json['tax'] as double,
       products: productsList,
+      number: int.parse(number),
     );
   }
 
@@ -44,6 +48,7 @@ class ItemsModel {
       "total": total,
       "tax": taxPrice,
       "products": list,
+      "number": number,
       // "quantity": jsonEncode(quantity),
       // "subtotal": jsonEncode(subTotal),
       // "total": jsonEncode(total),
@@ -57,6 +62,7 @@ class ItemsModel {
   final double total;
   final double taxPrice;
   final List<ProductModel> products;
+  final int number;
 }
 
 class ProductModel {

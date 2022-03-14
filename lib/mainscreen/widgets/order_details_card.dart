@@ -54,7 +54,7 @@ class OrderDetailCard extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              CardText(text: model.number.toString(), label: '#'),
+              CardText(text: model.itemsModel.number.toString(), label: '#'),
               const SizedBox(
                 height: 4,
               ),
