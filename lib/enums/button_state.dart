@@ -7,4 +7,7 @@ enum ButtonState {
 
   ///[ButtonState.SUCCESS] to show the required data.
   SUCCESS,
+
+  ///[ButtonState.APPLIED] to continue showing button
+  APPLIED,
 }

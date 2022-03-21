@@ -12,6 +12,7 @@ import 'package:scanner/mainscreen/screens/order_detail_screen.dart';
 import 'package:scanner/mainscreen/store/orders/orders_store.dart';
 import 'package:scanner/mainscreen/utils/constants.dart';
 import 'package:scanner/mainscreen/utils/user_dialog.dart';
+import 'package:scanner/mainscreen/widgets/filter_button.dart';
 import 'package:scanner/mainscreen/widgets/generate_qr_button.dart';
 import 'package:scanner/mainscreen/widgets/order_details_card.dart';
 import 'package:scanner/mainscreen/widgets/orders_checkbox.dart';
@@ -64,6 +65,7 @@ class _HomeState extends State<Home> {
                                 IconButton(
                                     onPressed: () {
                                       store.fileState = FileState.NORMAL;
+                                      store.generateQRList.clear();
                                     },
                                     icon: const Icon(
                                       Icons.close,
@@ -84,45 +86,51 @@ class _HomeState extends State<Home> {
                                   style: TextStyle(
                                       color: Colors.white, fontSize: 22),
                                 ),
-                                IconButton(
-                                  onPressed: () {
-                                    store.fileState = FileState.SELECTED;
-                                  },
-                                  icon: const Icon(
-                                    Icons.picture_as_pdf,
-                                    color: Colors.white,
-                                    size: 22,
-                                  ),
-                                )
+                                Row(
+                                  children: [
+                                    const FilterButton(),
+                                    const SizedBox(
+                                      width: 7,
+                                    ),
+                                    IconButton(
+                                      onPressed: () {
+                                        store.fileState = FileState.SELECTED;
+                                      },
+                                      icon: const Icon(
+                                        Icons.picture_as_pdf,
+                                        color: Colors.white,
+                                        size: 22,
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ],
                             ),
                           );
                       }
                     }),
                     const SizedBox(height: 20),
-                    Observer(builder: (_) {
-                      return TabBar(
-                          indicatorColor: Colors.white,
-                          indicatorSize: TabBarIndicatorSize.tab,
-                          labelStyle: const TextStyle(
-                            fontSize: 15,
-                            fontWeight: FontWeight.bold,
+                    TabBar(
+                        indicatorColor: Colors.white,
+                        indicatorSize: TabBarIndicatorSize.tab,
+                        labelStyle: const TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        onTap: (index) {
+                          store.selectedTabIndex = index;
+                        },
+                        tabs: const [
+                          Tab(
+                            text: 'New',
                           ),
-                          onTap: (index) {
-                            store.selectedTabIndex = index;
-                          },
-                          tabs: const [
-                            Tab(
-                              text: 'New',
-                            ),
-                            Tab(
-                              text: 'Pending',
-                            ),
-                            Tab(
-                              text: 'Completed',
-                            ),
-                          ]);
-                    }),
+                          Tab(
+                            text: 'Pending',
+                          ),
+                          Tab(
+                            text: 'Completed',
+                          ),
+                        ]),
                   ],
                 ),
               ),
@@ -131,245 +139,349 @@ class _HomeState extends State<Home> {
               height: 5,
             ),
             Expanded(
-              child: Observer(builder: (_) {
-                return TabBarView(
-                    physics: const BouncingScrollPhysics(),
-                    children: [
-                      Observer(builder: (_) {
-                        final ordersList = store.newOrders;
-                        final state = store.newState;
-                        // final _repository = OrdersRepository();
-                        switch (state) {
-                          case StoreState.LOADING:
-                            return const Center(
-                              child: SizedBox(
-                                height: 50,
-                                width: 50,
-                                child: CircularProgressIndicator(
-                                  color: primaryColor,
-                                ),
-                              ),
-                            );
-                          case StoreState.SUCCESS:
-                            return RefreshIndicator(
-                              onRefresh: () async {
-                                await store.getNewOrders();
-                              },
-                              color: primaryColor,
-                              child: Observer(builder: (_) {
-                                final fileState = store.fileState;
+              child:
+                  TabBarView(physics: const BouncingScrollPhysics(), children: [
+                Observer(builder: (_) {
+                  // final ordersList = store.newOrders;
+                  final state = store.newState;
+                  // final _repository = OrdersRepository();
+                  switch (state) {
+                    case StoreState.LOADING:
+                      return const Center(
+                        child: SizedBox(
+                          height: 50,
+                          width: 50,
+                          child: CircularProgressIndicator(
+                            color: primaryColor,
+                          ),
+                        ),
+                      );
+                    case StoreState.SUCCESS:
+                      return RefreshIndicator(
+                        onRefresh: () async {
+                          await store.getNewOrders();
+                        },
+                        color: primaryColor,
+                        child: Observer(builder: (_) {
+                          final fileState = store.fileState;
 
-                                switch (fileState) {
-                                  case FileState.SELECTED:
-                                    return Stack(
-                                      children: [
-                                        OrdersList(
-                                          ordersList: ordersList,
-                                          store: store,
-                                          fileState: fileState,
-                                        ),
-                                        Positioned(
-                                            bottom: 20,
-                                            left: MediaQuery.of(context)
-                                                    .size
-                                                    .width /
-                                                6,
-                                            child: GenrateQRButton(
-                                              store: store,
-                                            )),
-                                      ],
-                                    );
-                                  case FileState.NORMAL:
-                                    return OrdersList(
-                                      ordersList: ordersList,
-                                      store: store,
-                                      fileState: fileState,
-                                    );
-                                }
-                              }),
-                            );
-                          case StoreState.ERROR:
-                            return const SizedBox();
-                          case StoreState.EMPTY:
-                            return Center(
-                                child: SizedBox(
-                              height: 150,
-                              child: Image.asset(
-                                'assets/images/empty.png',
-                                fit: BoxFit.fill,
-                              ),
-                            ));
-                        }
-                      }),
-                      // const Center(child: Text('Pending')),
-                      Observer(builder: (_) {
-                        final ordersList = store.pendingOrders;
+                          switch (fileState) {
+                            case FileState.SELECTED:
+                              return Stack(
+                                children: [
+                                  // OrdersList(
+                                  //   ordersList: ordersList,
+                                  //   store: store,
+                                  //   fileState: fileState,
+                                  // ),
+                                  Observer(builder: (_) {
+                                    final ordersList = store.newOrders;
 
-                        final state = store.pendingState;
-                        switch (state) {
-                          case StoreState.LOADING:
-                            return const Center(
-                              child: SizedBox(
-                                height: 50,
-                                width: 50,
-                                child: CircularProgressIndicator(
-                                  color: primaryColor,
-                                ),
-                              ),
-                            );
-                          case StoreState.SUCCESS:
-                            return RefreshIndicator(
-                              onRefresh: () async {
-                                await store.getPendingOrders();
-                              },
-                              color: primaryColor,
-                              child:
-                                  // ListView.builder(
-                                  //     physics: const BouncingScrollPhysics(),
-                                  //     itemCount: ordersList.length,
-                                  //     itemBuilder: (context, index) {
-                                  //       final model = ordersList[index];
-                                  //       return GestureDetector(
-                                  //         onTap: () async {
-                                  //           final pendingModel = model.copyWith(
-                                  //               status:
-                                  //                   Status.COMPLETED.inString());
-                                  //           await store.addCompletedData(
-                                  //               model: pendingModel);
-                                  //         },
-                                  //         child: Padding(
-                                  //           padding: const EdgeInsets.all(8.0),
-                                  //           child: OrderDetailCard(model: model),
-                                  //           // Container(
-                                  //           //   padding: const EdgeInsets.all(10),
-                                  //           //   decoration: BoxDecoration(
-                                  //           //       shape: BoxShape.rectangle,
-                                  //           //       borderRadius:
-                                  //           //           BorderRadius.circular(10),
-                                  //           //       color: Colors.amber),
-                                  //           //   child: Row(
-                                  //           //     children: [
-                                  //           //       Text(model.userInfo.firstName),
-                                  //           //       const SizedBox(
-                                  //           //         width: 10,
-                                  //           //       ),
-                                  //           //       Text(model.userInfo.email),
-                                  //           //     ],
-                                  //           //   ),
-                                  //           // ),
-                                  //         ),
-                                  //       );
-                                  //     }),
-                                  OrdersList(
-                                      ordersList: ordersList,
-                                      fileState: FileState.NORMAL,
-                                      store: store),
-                            );
-                          case StoreState.ERROR:
-                            return const SizedBox();
-                          case StoreState.EMPTY:
-                            return Center(
-                                child: SizedBox(
-                              height: 150,
-                              child: Image.asset(
-                                'assets/images/empty.png',
-                                fit: BoxFit.fill,
-                              ),
-                            ));
-                        }
-                      }),
-                      // const Center(child: Text('Completed')),
-                      Observer(builder: (_) {
-                        final ordersList = store.completedOrders;
+                                    return ListView.builder(
+                                        physics: const BouncingScrollPhysics(),
+                                        itemCount: ordersList.length,
+                                        itemBuilder: (context, index) {
+                                          final model = ordersList[index];
+                                          // store.qrKey = GlobalKey();
+                                          return GestureDetector(
+                                            onTap: () async {
+                                              Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          Provider.value(
+                                                            value: store,
+                                                            child:
+                                                                OrderDetailScreen(
+                                                              model: model,
+                                                            ),
+                                                          )));
+                                            },
+                                            child: Observer(builder: (_) {
+                                              final fileState = store.fileState;
 
-                        final state = store.completedState;
-                        switch (state) {
-                          case StoreState.LOADING:
-                            return const Center(
-                              child: SizedBox(
-                                height: 50,
-                                width: 50,
-                                child: CircularProgressIndicator(
-                                  color: primaryColor,
-                                ),
-                              ),
-                            );
-                          case StoreState.SUCCESS:
-                            return RefreshIndicator(
-                              onRefresh: () async {
-                                await store.getCompletedOrders();
-                              },
-                              color: primaryColor,
-                              child:
-                                  // ListView.builder(
-                                  //     physics: const BouncingScrollPhysics(),
-                                  //     itemCount: ordersList.length,
-                                  //     itemBuilder: (context, index) {
-                                  //       final model = ordersList[index];
-                                  //       return GestureDetector(
-                                  //         onTap: () async {
-                                  //           final pendingModel = model.copyWith(
-                                  //               status:
-                                  //                   Status.COMPLETED.inString());
-                                  //           // await store.addCompletedData(
-                                  //           //     model: pendingModel);
-                                  //         },
-                                  //         child: Padding(
-                                  //           padding: const EdgeInsets.all(8.0),
-                                  //           child: OrderDetailCard(model: model),
-                                  //           // Container(
-                                  //           //   padding: const EdgeInsets.all(10),
-                                  //           //   decoration: BoxDecoration(
-                                  //           //       shape: BoxShape.rectangle,
-                                  //           //       borderRadius:
-                                  //           //           BorderRadius.circular(10),
-                                  //           //       color: Colors.amber),
-                                  //           //   child: Row(
-                                  //           //     children: [
-                                  //           //       Text(model.userInfo.firstName),
-                                  //           //       const SizedBox(
-                                  //           //         width: 10,
-                                  //           //       ),
-                                  //           //       Text(model.userInfo.email),
-                                  //           //     ],
-                                  //           //   ),
-                                  //           // ),
-                                  //         ),
-                                  //       );
-                                  //     }),
-                                  OrdersList(
-                                      ordersList: ordersList,
-                                      fileState: FileState.NORMAL,
-                                      store: store),
-                            );
-                          case StoreState.ERROR:
-                            return const SizedBox();
-                          case StoreState.EMPTY:
-                            return Center(
-                                child: SizedBox(
-                              height: 150,
-                              child: Image.asset(
-                                'assets/images/empty.png',
-                                fit: BoxFit.fill,
-                              ),
-                            ));
-                        }
-                      }),
-                    ]);
-              }),
+                                              switch (fileState) {
+                                                case FileState.SELECTED:
+                                                  return Padding(
+                                                    padding:
+                                                        const EdgeInsets.all(
+                                                            8.0),
+                                                    child: SelectedDetailsCard(
+                                                        model: model,
+                                                        store: store),
+                                                  );
+                                                case FileState.NORMAL:
+                                                  return Padding(
+                                                    padding:
+                                                        const EdgeInsets.all(
+                                                            8.0),
+                                                    child: OrderDetailCard(
+                                                      model: model,
+                                                      store: store,
+                                                    ),
+                                                  );
+                                              }
+                                            }),
+                                          );
+                                        });
+                                  }),
+                                  Positioned(
+                                    bottom: 20,
+                                    left: MediaQuery.of(context).size.width / 6,
+                                    child: GenrateQRButton(store: store),
+                                  ),
+                                ],
+                              );
+                            case FileState.NORMAL:
+                              // return OrdersList(
+                              //   ordersList: ordersList,
+                              //   store: store,
+                              //   fileState: fileState,
+                              // );
+                              return Observer(builder: (_) {
+                                final ordersList = store.newOrders;
+
+                                return ListView.builder(
+                                    physics: const BouncingScrollPhysics(),
+                                    itemCount: ordersList.length,
+                                    itemBuilder: (context, index) {
+                                      final model = ordersList[index];
+                                      // store.qrKey = GlobalKey();
+                                      return GestureDetector(
+                                        onTap: () async {
+                                          Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      Provider.value(
+                                                        value: store,
+                                                        child:
+                                                            OrderDetailScreen(
+                                                          model: model,
+                                                        ),
+                                                      )));
+                                        },
+                                        child: Observer(builder: (_) {
+                                          final fileState = store.fileState;
+
+                                          switch (fileState) {
+                                            case FileState.SELECTED:
+                                              return Padding(
+                                                padding:
+                                                    const EdgeInsets.all(8.0),
+                                                child: SelectedDetailsCard(
+                                                    model: model, store: store),
+                                              );
+                                            case FileState.NORMAL:
+                                              return Padding(
+                                                padding:
+                                                    const EdgeInsets.all(8.0),
+                                                child: OrderDetailCard(
+                                                  model: model,
+                                                  store: store,
+                                                ),
+                                              );
+                                          }
+                                        }),
+                                      );
+                                    });
+                              });
+                          }
+                        }),
+                      );
+                    case StoreState.ERROR:
+                      // return const SizedBox();
+                      return Center(
+                          child: SizedBox(
+                        height: 150,
+                        child: Image.asset(
+                          'assets/images/empty.png',
+                          fit: BoxFit.fill,
+                        ),
+                      ));
+                    case StoreState.EMPTY:
+                      return Center(
+                          child: SizedBox(
+                        height: 150,
+                        child: Image.asset(
+                          'assets/images/empty.png',
+                          fit: BoxFit.fill,
+                        ),
+                      ));
+                  }
+                }),
+                // const Center(child: Text('Pending')),
+                Observer(builder: (_) {
+                  final state = store.pendingState;
+                  switch (state) {
+                    case StoreState.LOADING:
+                      return const Center(
+                        child: SizedBox(
+                          height: 50,
+                          width: 50,
+                          child: CircularProgressIndicator(
+                            color: primaryColor,
+                          ),
+                        ),
+                      );
+                    case StoreState.SUCCESS:
+                      return RefreshIndicator(
+                        onRefresh: () async {
+                          await store.getPendingOrders();
+                        },
+                        color: primaryColor,
+                        // child: OrdersList(
+                        //     ordersList: ordersList,
+                        //     fileState: FileState.NORMAL,
+                        //     store: store),
+                        child: Observer(builder: (_) {
+                          final ordersList = store.pendingOrders;
+
+                          return ListView.builder(
+                              physics: const BouncingScrollPhysics(),
+                              itemCount: ordersList.length,
+                              itemBuilder: (context, index) {
+                                final model = ordersList[index];
+                                // store.qrKey = GlobalKey();
+                                return GestureDetector(
+                                  onTap: () async {
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                Provider.value(
+                                                  value: store,
+                                                  child: OrderDetailScreen(
+                                                    model: model,
+                                                  ),
+                                                )));
+                                  },
+                                  child: Observer(builder: (_) {
+                                    final fileState = store.fileState;
+
+                                    switch (fileState) {
+                                      case FileState.SELECTED:
+                                        return Padding(
+                                          padding: const EdgeInsets.all(8.0),
+                                          child: SelectedDetailsCard(
+                                              model: model, store: store),
+                                        );
+                                      case FileState.NORMAL:
+                                        return Padding(
+                                          padding: const EdgeInsets.all(8.0),
+                                          child: OrderDetailCard(
+                                            model: model,
+                                            store: store,
+                                          ),
+                                        );
+                                    }
+                                  }),
+                                );
+                              });
+                        }),
+                      );
+                    case StoreState.ERROR:
+                      return const SizedBox();
+                    case StoreState.EMPTY:
+                      return Center(
+                          child: SizedBox(
+                        height: 150,
+                        child: Image.asset(
+                          'assets/images/empty.png',
+                          fit: BoxFit.fill,
+                        ),
+                      ));
+                  }
+                }),
+                // const Center(child: Text('Completed')),
+                Observer(builder: (_) {
+                  // final ordersList = store.completedOrders;
+
+                  final state = store.completedState;
+                  switch (state) {
+                    case StoreState.LOADING:
+                      return const Center(
+                        child: SizedBox(
+                          height: 50,
+                          width: 50,
+                          child: CircularProgressIndicator(
+                            color: primaryColor,
+                          ),
+                        ),
+                      );
+                    case StoreState.SUCCESS:
+                      return RefreshIndicator(
+                        onRefresh: () async {
+                          await store.getCompletedOrders();
+                        },
+                        color: primaryColor,
+                        // child: OrdersList(
+                        //   fileState: FileState.NORMAL,
+                        //   store: store,
+                        // ),
+                        child: Observer(builder: (_) {
+                          final ordersList = store.completedOrders;
+
+                          return ListView.builder(
+                              physics: const BouncingScrollPhysics(),
+                              itemCount: ordersList.length,
+                              itemBuilder: (context, index) {
+                                final model = ordersList[index];
+                                // store.qrKey = GlobalKey();
+                                return GestureDetector(
+                                  onTap: () async {
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                Provider.value(
+                                                  value: store,
+                                                  child: OrderDetailScreen(
+                                                    model: model,
+                                                  ),
+                                                )));
+                                  },
+                                  child: Observer(builder: (_) {
+                                    final fileState = store.fileState;
+
+                                    switch (fileState) {
+                                      case FileState.SELECTED:
+                                        return Padding(
+                                          padding: const EdgeInsets.all(8.0),
+                                          child: SelectedDetailsCard(
+                                              model: model, store: store),
+                                        );
+                                      case FileState.NORMAL:
+                                        return Padding(
+                                          padding: const EdgeInsets.all(8.0),
+                                          child: OrderDetailCard(
+                                            model: model,
+                                            store: store,
+                                          ),
+                                        );
+                                    }
+                                  }),
+                                );
+                              });
+                        }),
+                      );
+                    case StoreState.ERROR:
+                      return const SizedBox();
+                    case StoreState.EMPTY:
+                      return Center(
+                          child: SizedBox(
+                        height: 150,
+                        child: Image.asset(
+                          'assets/images/empty.png',
+                          fit: BoxFit.fill,
+                        ),
+                      ));
+                  }
+                }),
+              ]),
             ),
           ],
         ),
-        // floatingActionButton: FloatingActionButton(
-        //     backgroundColor: primaryColor,
-        //     onPressed: () async {
-        //       final repo = OrdersRepository();
-        //       await repo.getNewOrdersList();
-        //     },
-        //     child: const Icon(
-        //       Icons.add_circle_outline_sharp,
-        //       color: Colors.white,
-        //     )),
         floatingActionButton: Observer(builder: (_) {
           final state = store.fileState;
 
@@ -516,12 +628,9 @@ class _HomeState extends State<Home> {
 class OrdersList extends StatelessWidget {
   const OrdersList({
     Key? key,
-    required this.ordersList,
     required this.fileState,
     required this.store,
   }) : super(key: key);
-
-  final List<OrdersModel> ordersList;
   final OrdersStore store;
   final FileState fileState;
 
@@ -529,61 +638,49 @@ class OrdersList extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(8),
-      child: ListView.builder(
-          physics: const BouncingScrollPhysics(),
-          itemCount: ordersList.length,
-          itemBuilder: (context, index) {
-            final model = ordersList[index];
-            // store.qrKey = GlobalKey();
-            return GestureDetector(
-              onTap: () async {
-                // showModalBottomSheet(
-                //     context: context,
-                //     shape: RoundedRectangleBorder(
-                //       borderRadius:
-                //           BorderRadius.circular(10),
-                //     ),
-                //     builder: (context) {
-                //       return QRCodeWidget(
-                //         model: model,
-                //         store: store,
-                //       );
-                //     });
-                // final pendingModel = model.copyWith(
-                //     status: Status.PENDING.inString());
-                // await store.addPendingData(
-                //     model: pendingModel);
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => Provider.value(
-                              value: store,
-                              child: OrderDetailScreen(
-                                model: model,
-                              ),
-                            )));
-              },
-              child: Observer(builder: (_) {
-                final fileState = store.fileState;
+      child: Observer(builder: (_) {
+        final ordersList = store.pendingOrders;
 
-                switch (fileState) {
-                  case FileState.SELECTED:
-                    return Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: SelectedDetailsCard(model: model, store: store),
-                    );
-                  case FileState.NORMAL:
-                    return Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: OrderDetailCard(
-                        model: model,
-                        store: store,
-                      ),
-                    );
-                }
-              }),
-            );
-          }),
+        return ListView.builder(
+            physics: const BouncingScrollPhysics(),
+            itemCount: ordersList.length,
+            itemBuilder: (context, index) {
+              final model = ordersList[index];
+              // store.qrKey = GlobalKey();
+              return GestureDetector(
+                onTap: () async {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => Provider.value(
+                                value: store,
+                                child: OrderDetailScreen(
+                                  model: model,
+                                ),
+                              )));
+                },
+                child: Observer(builder: (_) {
+                  final fileState = store.fileState;
+
+                  switch (fileState) {
+                    case FileState.SELECTED:
+                      return Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: SelectedDetailsCard(model: model, store: store),
+                      );
+                    case FileState.NORMAL:
+                      return Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: OrderDetailCard(
+                          model: model,
+                          store: store,
+                        ),
+                      );
+                  }
+                }),
+              );
+            });
+      }),
     );
   }
 }

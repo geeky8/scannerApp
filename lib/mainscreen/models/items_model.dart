@@ -1,11 +1,12 @@
 class ItemsModel {
   ItemsModel({
     required this.quantity,
-    required this.subTotal,
     required this.total,
-    required this.taxPrice,
     required this.products,
     required this.number,
+    this.gradDate,
+    this.height,
+    required this.type,
   });
 
   factory ItemsModel.fromJson(
@@ -19,6 +20,45 @@ class ItemsModel {
       productsList.add(model);
     }
 
+    if (lineItems.isNotEmpty) {
+      final options = (lineItems[0] ?? {} as Map<String, dynamic>)['options']
+          as List<dynamic>;
+      return ItemsModel(
+        quantity: json['quantity'] as int,
+        total: double.parse(json['total'].toString()),
+        products: productsList,
+        number: int.parse(number),
+        type: ((lineItems[0] as Map<String, dynamic>)['name'] as String)
+            .split('-')
+            .last,
+        height: (options[0] as Map<String, dynamic>)['selection'] ?? " ",
+        gradDate: (options.length > 1)
+            ? (options[1] as Map<String, dynamic>)['selection']
+            : " ",
+      );
+    } else if (lineItems.isEmpty) {
+      return ItemsModel(
+        quantity: json['quantity'] as int,
+        total: double.parse(json['total'].toString()),
+        products: productsList,
+        number: int.parse(number),
+        type: json['type'] as String,
+        height: json['height'] as String,
+        gradDate: json['gradDate'] as String,
+      );
+    } else {
+      return ItemsModel(
+        quantity: json['quantity'] as int,
+        total: double.parse(json['total'].toString()),
+        products: productsList,
+        number: int.parse(number),
+        type: ((lineItems[0] as Map<String, dynamic>)['name'] as String)
+            .split('-')
+            .first,
+      );
+    }
+    // print((options[1] as Map<String, dynamic>)['selection']);
+
     // return ItemsModel(
     //   quantity: int.parse((json['quantity'] as int).toString() ?? json['quantity'].toString()),
     //   subTotal: double.parse(json['subtotal'].toString()),
@@ -26,14 +66,6 @@ class ItemsModel {
     //   taxPrice: double.parse(json['tax'].toString()),
     //   products: productsList,
     // );
-    return ItemsModel(
-      quantity: json['quantity'] as int,
-      subTotal: json['subtotal'] as double,
-      total: double.parse(json['total'].toString()),
-      taxPrice: json['tax'] as double,
-      products: productsList,
-      number: int.parse(number),
-    );
   }
 
   Map<String, dynamic> toMap() {
@@ -44,37 +76,32 @@ class ItemsModel {
     }
     return {
       "quantity": quantity,
-      "subtotal": subTotal,
       "total": total,
-      "tax": taxPrice,
       "products": list,
       "number": number,
-      // "quantity": jsonEncode(quantity),
-      // "subtotal": jsonEncode(subTotal),
-      // "total": jsonEncode(total),
-      // "tax": jsonEncode(taxPrice),
-      // "products": jsonEncode([...products]),
+      "gradDate": gradDate,
+      "height": height,
+      "type": type,
     };
   }
 
   final int quantity;
-  final double subTotal;
   final double total;
-  final double taxPrice;
   final List<ProductModel> products;
   final int number;
+  final String? height;
+  final String? gradDate;
+  final String type;
 }
 
 class ProductModel {
   ProductModel({
-    required this.collegeName,
     required this.productId,
     required this.price,
   });
 
   factory ProductModel.fromJson({required Map<String, dynamic> json}) {
     return ProductModel(
-      collegeName: json['name'] as String,
       productId: json['productId'] as String,
       price: double.parse(json['price'].toString()),
     );
@@ -82,13 +109,11 @@ class ProductModel {
 
   Map<String, dynamic> toMap() {
     return {
-      "collegeName": collegeName,
       "productId": productId,
       "price": price,
     };
   }
 
-  final String collegeName;
   final String productId;
   final double price;
 }

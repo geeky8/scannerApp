@@ -23,121 +23,186 @@ class OrderDetailScreen extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.all(10),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const SizedBox(
-                  height: 10,
-                ),
-                Container(
-                  // padding: const EdgeInsets.all(10),
-                  decoration: const BoxDecoration(
-                      color: Colors.white, shape: BoxShape.circle),
-                  // alignment: Alignment.center,
-                  child: IconButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                    icon: const Icon(
-                      Icons.arrow_back,
-                      size: 25,
-                      color: primaryColor,
+                Expanded(
+                  child: SingleChildScrollView(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const SizedBox(
+                          height: 20,
+                        ),
+                        Container(
+                          // padding: const EdgeInsets.all(10),
+                          decoration: const BoxDecoration(
+                              color: Colors.white, shape: BoxShape.circle),
+                          // alignment: Alignment.center,
+                          child: IconButton(
+                            onPressed: () {
+                              Navigator.pop(context);
+                            },
+                            icon: const Icon(
+                              Icons.arrow_back,
+                              size: 25,
+                              color: primaryColor,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        Column(
+                          children: [
+                            Container(
+                              width: MediaQuery.of(context).size.width / 3,
+                              height: MediaQuery.of(context).size.width / 3,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(15),
+                              ),
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(15),
+                                child: const Image(
+                                  image: AssetImage(
+                                    'assets/images/notes.png',
+                                    // scale: 50,
+                                    // height: MediaQuery.of(context).size.height / 6,
+                                    // width: MediaQuery.of(context).size.width / 3,
+                                    // fit: BoxFit.contain,
+                                  ),
+                                ),
+                              ),
+                              // child: ClipRRect(
+                              //   borderRadius: BorderRadius.circular(30),
+                              //   child: Image.asset(
+                              //     'assets/images/notes.png',
+                              //     // scale: 50,
+                              //     height: MediaQuery.of(context).size.height / 6,
+                              //     width: MediaQuery.of(context).size.width / 3,
+                              //     fit: BoxFit.contain,
+                              //   ),
+                              // ),
+                            ),
+                            const SizedBox(
+                              height: 15,
+                            ),
+                            Container(
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(15),
+                              ),
+                              alignment: Alignment.center,
+                              padding: const EdgeInsets.all(10),
+                              child: Column(
+                                // mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  TextBlock(
+                                    label: 'Order No.# :',
+                                    text: model.itemsModel.number.toString(),
+                                  ),
+                                  const SizedBox(
+                                    height: 10,
+                                  ),
+                                  TextBlock(
+                                    label: 'Mobile :',
+                                    text: model.userInfo.phone,
+                                  ),
+                                  const SizedBox(
+                                    height: 10,
+                                  ),
+                                  TextBlock(
+                                    label: 'E-mail :',
+                                    text: model.userInfo.email,
+                                  ),
+                                  const SizedBox(
+                                    height: 10,
+                                  ),
+                                  TextBlock(
+                                    label: 'Checkout Price :',
+                                    text: model.itemsModel.total.toString(),
+                                  ),
+                                  const SizedBox(
+                                    height: 10,
+                                  ),
+                                  TextBlock(
+                                    label: 'Quantity :',
+                                    text: model.itemsModel.quantity.toString(),
+                                  ),
+                                  const SizedBox(
+                                    height: 10,
+                                  ),
+                                  TextBlock(
+                                    label: 'Address:',
+                                    text: model.addressModel.addressLine,
+                                  ),
+                                  const SizedBox(
+                                    height: 10,
+                                  ),
+                                  TextBlock(
+                                    label: 'City:',
+                                    text: model.addressModel.city,
+                                  ),
+                                  const SizedBox(
+                                    height: 10,
+                                  ),
+                                  TextBlock(
+                                    label: 'Postal Code:',
+                                    text: model.addressModel.postalCode,
+                                  ),
+                                  const SizedBox(
+                                    height: 10,
+                                  ),
+                                  TextBlock(
+                                    label: 'Gown Type:',
+                                    text: model.itemsModel.type,
+                                  ),
+                                  const SizedBox(
+                                    height: 10,
+                                  ),
+                                  TextBlock(
+                                    label: 'Height:',
+                                    text: model.itemsModel.height ?? 'ft',
+                                  ),
+                                  const SizedBox(
+                                    height: 10,
+                                  ),
+                                  if (model.userInfo.buyerNote == null)
+                                    TextBlock(
+                                      label: 'Graduation Date:',
+                                      text: model.itemsModel.gradDate ??
+                                          '00-00-0000',
+                                    ),
+                                  if (model.userInfo.buyerNote != null)
+                                    TextBlock(
+                                      label: 'Buyer Note:',
+                                      text: model.userInfo.buyerNote!,
+                                    ),
+
+                                  // const SizedBox(
+                                  //   height: 10,
+                                  // ),
+                                  // TextBlock(
+                                  //   label: 'College :',
+                                  //   text: model.collegeName,
+                                  // ),
+                                  // const SizedBox(
+                                  //   height: 10,
+                                  // ),
+                                  //  TextBlock(
+                                  //   label: 'Checkout Price :',
+                                  //   text: model.itemsModel.total.toString(),
+                                  // ),
+                                  // const SizedBox(
+                                  //   height: 10,
+                                  // ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
                     ),
                   ),
-                ),
-                const SizedBox(
-                  height: 20,
-                ),
-                Column(
-                  children: [
-                    CircleAvatar(
-                      radius: MediaQuery.of(context).size.width / 4,
-                      backgroundColor: primaryColor,
-                      backgroundImage: const AssetImage(
-                        'assets/images/notes.png',
-                        // scale: 50,
-                        // height: MediaQuery.of(context).size.height / 6,
-                        // width: MediaQuery.of(context).size.width / 3,
-                        // fit: BoxFit.contain,
-                      ),
-                      // child: ClipRRect(
-                      //   borderRadius: BorderRadius.circular(30),
-                      //   child: Image.asset(
-                      //     'assets/images/notes.png',
-                      //     // scale: 50,
-                      //     height: MediaQuery.of(context).size.height / 6,
-                      //     width: MediaQuery.of(context).size.width / 3,
-                      //     fit: BoxFit.contain,
-                      //   ),
-                      // ),
-                    ),
-                    const SizedBox(
-                      height: 15,
-                    ),
-                    Container(
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(15),
-                      ),
-                      alignment: Alignment.center,
-                      padding: const EdgeInsets.all(10),
-                      child: Column(
-                        // mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          TextBlock(
-                            label: 'Order No.# :',
-                            text: model.itemsModel.number.toString(),
-                          ),
-                          const SizedBox(
-                            height: 10,
-                          ),
-                          TextBlock(
-                            label: 'Name :',
-                            text:
-                                '${model.userInfo.firstName} ${model.userInfo.lastName}',
-                          ),
-                          const SizedBox(
-                            height: 10,
-                          ),
-                          TextBlock(
-                            label: 'E-mail :',
-                            text: model.userInfo.email,
-                          ),
-                          const SizedBox(
-                            height: 10,
-                          ),
-                          TextBlock(
-                            label: 'Checkout Price :',
-                            text: model.itemsModel.total.toString(),
-                          ),
-                          const SizedBox(
-                            height: 10,
-                          ),
-                          TextBlock(
-                            label: 'Quantity :',
-                            text: model.itemsModel.quantity.toString(),
-                          ),
-                          const SizedBox(
-                            height: 10,
-                          ),
-                          TextBlock(
-                            label: 'College :',
-                            text: model.collegeName,
-                          ),
-                          // const SizedBox(
-                          //   height: 10,
-                          // ),
-                          //  TextBlock(
-                          //   label: 'Checkout Price :',
-                          //   text: model.itemsModel.total.toString(),
-                          // ),
-                          // const SizedBox(
-                          //   height: 10,
-                          // ),
-                        ],
-                      ),
-                    ),
-                  ],
                 ),
               ],
             ),
@@ -150,6 +215,9 @@ class OrderDetailScreen extends StatelessWidget {
 
               if (state == Status.NEW) {
                 return OrderQrCodeGen(store: store, model: model);
+                // return ModButton(store: store, buttonText: 'Generate QR Code', func: ()async{
+                //   await store.
+                // })
               } else {
                 return const SizedBox();
               }
@@ -175,23 +243,27 @@ class TextBlock extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Text(
-          label,
-          style: const TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.w500,
-            color: primaryColor,
+        Expanded(
+          child: Text(
+            label,
+            style: const TextStyle(
+              fontSize: 17,
+              fontWeight: FontWeight.w500,
+              color: primaryColor,
+            ),
           ),
         ),
         const SizedBox(
           width: 7,
         ),
-        Text(
-          text,
-          style: const TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.w400,
-            color: primaryColor,
+        Expanded(
+          child: Text(
+            text,
+            style: const TextStyle(
+              fontSize: 15,
+              fontWeight: FontWeight.w400,
+              color: primaryColor,
+            ),
           ),
         )
       ],
@@ -240,6 +312,8 @@ class OrderQrCodeGen extends StatelessWidget {
                     color: Colors.white,
                     fontWeight: FontWeight.w400),
               );
+            case ButtonState.APPLIED:
+              return const SizedBox();
           }
         }),
       ),

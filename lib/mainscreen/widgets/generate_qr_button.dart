@@ -46,19 +46,6 @@ class GenrateQRButton extends StatelessWidget {
     return GestureDetector(
       onTap: () async {
         await store.generateQRCodes();
-        // pw.Document pdf = pw.Document();
-        // // final list = List.unmodifiable(['1', '2', '3', '4', '5']);
-        // final list = store.generateQRList;
-        // List<ByteData> imageData = [];
-        // for (final model in list) {
-        //   final image = await toImage(data: model.id);
-        //   imageData.add(image!);
-        // }
-        // pdf = createPDF(imageData: imageData);
-        // final file = await fileConverter(pdf: pdf);
-        // await Printing.sharePdf(
-        //         bytes: await pdf.save(), filename: 'Document.pdf')
-        //     .then((value) => print("Done"));
       },
       child: Container(
         // padding: const EdgeInsets.symmetric(horizontal: 35, vertical: 15),
@@ -84,6 +71,8 @@ class GenrateQRButton extends StatelessWidget {
                     color: Colors.white,
                     fontWeight: FontWeight.w400),
               );
+            case ButtonState.APPLIED:
+              return const SizedBox();
           }
         }),
       ),

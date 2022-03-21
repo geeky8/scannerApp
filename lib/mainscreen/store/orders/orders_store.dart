@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:mobx/mobx.dart';
 import 'package:scanner/enums/button_state.dart';
@@ -11,6 +12,7 @@ import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
 
 import 'package:flutter/services.dart';
+import 'package:scanner/mainscreen/utils/constants.dart';
 
 part 'orders_store.g.dart';
 
@@ -49,6 +51,12 @@ abstract class _OrdersStore with Store {
   @observable
   int selectedTabIndex = 0;
 
+  @observable
+  String selectedCollege = colToCollegeList.values.first;
+
+  @observable
+  ButtonState isFilterApplied = ButtonState.SUCCESS;
+
   @action
   Future<void> init() async {
     await getNewOrders();
@@ -63,7 +71,9 @@ abstract class _OrdersStore with Store {
       final newList = await _repository.getNewOrdersList();
       // final pendingList = await _repository.getPendingOrdersList();
       if (newList.isNotEmpty) {
-        newOrders.addAll(newList);
+        newOrders
+          ..clear()
+          ..addAll(newList);
         // pendingOrders.addAll(pendingList);
         newState = StoreState.SUCCESS;
       } else {
@@ -81,7 +91,9 @@ abstract class _OrdersStore with Store {
       // final newList = await _repository.getNewOrdersList();
       final pendingList = await _repository.getPendingOrdersList();
       if (pendingList.isNotEmpty) {
-        pendingOrders.addAll(pendingList);
+        pendingOrders
+          ..clear()
+          ..addAll(pendingList);
         // pendingOrders.addAll(pendingList);
         pendingState = StoreState.SUCCESS;
       } else {
@@ -99,7 +111,9 @@ abstract class _OrdersStore with Store {
       // final newList = await _repository.getNewOrdersList();
       final completedList = await _repository.getCompletedOrdersList();
       if (completedList.isNotEmpty) {
-        completedOrders.addAll(completedList);
+        completedOrders
+          ..clear()
+          ..addAll(completedList);
         // pendingOrders.addAll(pendingList);
         completedState = StoreState.SUCCESS;
       } else {
@@ -113,27 +127,31 @@ abstract class _OrdersStore with Store {
   @action
   Future<void> addPendingData({required OrdersModel model}) async {
     try {
+      buttonState = ButtonState.LOADING;
       final initModel = model.copyWith(status: 'pending');
       await _repository.moveData(model: initModel);
+      buttonState = ButtonState.SUCCESS;
       // final index = newOrders.indexWhere((element) => element.id == model.id);
       // newOrders.removeAt(index);
       // pendingOrders.insert(0, model);
     } on Exception catch (_) {
-      print('Exception');
+      // print('Exception');
     }
   }
 
   @action
   Future<void> addCompletedData({required OrdersModel model}) async {
     try {
+      buttonState = ButtonState.LOADING;
       final initModel = model.copyWith(status: 'completed');
       await _repository.moveData(model: initModel);
+      buttonState = ButtonState.SUCCESS;
       // final index =
       //     pendingOrders.indexWhere((element) => element.id == model.id);
       // pendingOrders.removeAt(index);
       // completedOrders.insert(0, model);
     } on Exception catch (_) {
-      print('Exception');
+      // print('Exception');
     }
   }
 
@@ -174,8 +192,8 @@ abstract class _OrdersStore with Store {
     }
     pdf = _repository.createPDF(imageData: imageData);
     await Printing.sharePdf(
-            bytes: await pdf.save(), filename: '($start-$end).pdf')
-        .then((value) => print("Done"));
+        bytes: await pdf.save(), filename: '($start-$end).pdf');
+    // .then((value) => print("Done"));
 
     buttonState = ButtonState.SUCCESS;
   }
@@ -194,12 +212,75 @@ abstract class _OrdersStore with Store {
         build: (pw.Context contex) {
           return pw.Center(child: pw.Image(image));
         }));
-    final file = await _repository.fileConverter(pdf: pdf);
+    // final file = await _repository.fileConverter(pdf: pdf);
     await _repository.moveData(model: model);
     await Printing.sharePdf(
-            bytes: await pdf.save(), filename: '${model.itemsModel.number}.pdf')
-        .then((value) => print("Done"));
+      bytes: await pdf.save(),
+      filename:
+          '${model.itemsModel.number}(${model.userInfo.firstName}${model.userInfo.lastName}).pdf',
+    );
+    // .then((value) => print("Done"));
     buttonState = ButtonState.SUCCESS;
+  }
+
+  @action
+  Future<void> applyFilter({required BuildContext context}) async {
+    final query = collegeToColList[selectedCollege];
+
+    buttonState = ButtonState.LOADING;
+    if (query != null) {
+      newState = StoreState.LOADING;
+      await getNewOrders();
+      final filteredNewOrders = <OrdersModel>[];
+      for (final model in newOrders) {
+        if (model.collegeName == selectedCollege) {
+          filteredNewOrders.add(model);
+        }
+      }
+      newOrders
+        ..clear()
+        ..addAll(filteredNewOrders);
+      newState = StoreState.SUCCESS;
+
+      final _pendingList =
+          await _repository.getFilteredOrders(query: query, status: 'pending');
+      newState = StoreState.SUCCESS;
+      // print(pendingOrders.length);
+      pendingState = StoreState.LOADING;
+      // print(_pendingList.length);
+      pendingOrders
+        ..clear()
+        ..addAll(_pendingList);
+      // print(pendingOrders.length);
+
+      pendingState = StoreState.SUCCESS;
+
+      completedState = StoreState.LOADING;
+      final _completedList = await _repository.getFilteredOrders(
+          query: query, status: 'completed');
+      // print(completedOrders.length);
+
+      // print(_completedList.length);
+      completedOrders
+        ..clear()
+        ..addAll(_completedList);
+      // print(completedOrders.length);
+
+      completedState = StoreState.SUCCESS;
+    }
+    buttonState = ButtonState.SUCCESS;
+
+    isFilterApplied = ButtonState.APPLIED;
+
+    Navigator.pop(context);
+  }
+
+  @action
+  Future<void> removeFilter({required BuildContext context}) async {
+    isFilterApplied = ButtonState.LOADING;
+    await init();
+    isFilterApplied = ButtonState.SUCCESS;
+    Navigator.pop(context);
   }
 
   // @action

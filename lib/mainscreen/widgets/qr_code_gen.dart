@@ -36,7 +36,7 @@ class QRCodeWidget extends StatelessWidget {
           onLayout: (format) async => imgBytes, name: '$number');
       // await Printing.sharePdf(bytes: imgBytes, filename: '$number.pdf');
     } catch (e) {
-      print(e.toString());
+      // print(e.toString());
     }
   }
 

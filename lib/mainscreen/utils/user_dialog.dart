@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:scanner/enums/button_state.dart';
 import 'package:scanner/enums/status.dart';
 import 'package:scanner/mainscreen/models/orders_model.dart';
 import 'package:scanner/mainscreen/store/orders/orders_store.dart';
@@ -65,21 +66,21 @@ class UserDialog extends StatelessWidget {
                     children: [
                       DialogText(
                         text: '${model.itemsModel.number}',
-                        icon: Icons.format_list_bulleted,
+                        label: 'Order No.# :',
                       ),
                       const SizedBox(
                         height: 10,
                       ),
                       DialogText(
                         text: model.userInfo.firstName,
-                        icon: Icons.person,
+                        label: 'Name :',
                       ),
                       const SizedBox(
                         height: 10,
                       ),
                       DialogText(
                         text: model.orderStatus,
-                        icon: Icons.label,
+                        label: 'Status :',
                       ),
                     ],
                   ),
@@ -143,16 +144,19 @@ class StateButton extends StatelessWidget {
           final state = currStatus(model.orderStatus);
           switch (state) {
             case Status.NEW:
-              return const MoveButtonText(
-                text: 'Move to Pending',
+              return MoveButtonText(
+                text: 'Pending',
+                store: store,
               );
             case Status.PENDING:
-              return const MoveButtonText(
-                text: 'Move to Completed',
+              return MoveButtonText(
+                text: 'Completed',
+                store: store,
               );
             case Status.COMPLETED:
-              return const MoveButtonText(
+              return MoveButtonText(
                 text: 'Cancel',
+                store: store,
               );
           }
         }),
@@ -164,18 +168,34 @@ class StateButton extends StatelessWidget {
 class MoveButtonText extends StatelessWidget {
   const MoveButtonText({
     required this.text,
+    required this.store,
     Key? key,
   }) : super(key: key);
 
   final String text;
+  final OrdersStore store;
 
   @override
   Widget build(BuildContext context) {
-    return Text(
-      text,
-      style: const TextStyle(
-          color: Colors.white, fontSize: 17, fontWeight: FontWeight.w500),
-    );
+    return Observer(builder: (_) {
+      final state = store.buttonState;
+
+      switch (state) {
+        case ButtonState.LOADING:
+          return const CircularProgressIndicator(
+            color: Colors.white,
+            strokeWidth: 3,
+          );
+        case ButtonState.SUCCESS:
+          return Text(
+            text,
+            style: const TextStyle(
+                color: Colors.white, fontSize: 17, fontWeight: FontWeight.w500),
+          );
+        case ButtonState.APPLIED:
+          return const SizedBox();
+      }
+    });
   }
 }
 
@@ -183,20 +203,20 @@ class DialogText extends StatelessWidget {
   const DialogText({
     Key? key,
     required this.text,
-    required this.icon,
+    required this.label,
   }) : super(key: key);
 
   final String text;
-  final IconData icon;
+  final String label;
 
   @override
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Icon(
-          icon,
-          color: primaryColor,
-          size: 25,
+        Text(
+          label,
+          style: const TextStyle(
+              color: primaryColor, fontSize: 20, fontWeight: FontWeight.w500),
         ),
         const SizedBox(
           width: 7,
@@ -205,7 +225,7 @@ class DialogText extends StatelessWidget {
             style: const TextStyle(
               color: primaryColor,
               fontWeight: FontWeight.w400,
-              fontSize: 22,
+              fontSize: 18,
             )),
       ],
     );

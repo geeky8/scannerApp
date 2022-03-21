@@ -159,6 +159,36 @@ mixin _$OrdersStore on _OrdersStore, Store {
     });
   }
 
+  final _$selectedCollegeAtom = Atom(name: '_OrdersStore.selectedCollege');
+
+  @override
+  String get selectedCollege {
+    _$selectedCollegeAtom.reportRead();
+    return super.selectedCollege;
+  }
+
+  @override
+  set selectedCollege(String value) {
+    _$selectedCollegeAtom.reportWrite(value, super.selectedCollege, () {
+      super.selectedCollege = value;
+    });
+  }
+
+  final _$isFilterAppliedAtom = Atom(name: '_OrdersStore.isFilterApplied');
+
+  @override
+  ButtonState get isFilterApplied {
+    _$isFilterAppliedAtom.reportRead();
+    return super.isFilterApplied;
+  }
+
+  @override
+  set isFilterApplied(ButtonState value) {
+    _$isFilterAppliedAtom.reportWrite(value, super.isFilterApplied, () {
+      super.isFilterApplied = value;
+    });
+  }
+
   final _$initAsyncAction = AsyncAction('_OrdersStore.init');
 
   @override
@@ -232,6 +262,22 @@ mixin _$OrdersStore on _OrdersStore, Store {
         .run(() => super.generateOrderQRCode(model: model));
   }
 
+  final _$applyFilterAsyncAction = AsyncAction('_OrdersStore.applyFilter');
+
+  @override
+  Future<void> applyFilter({required BuildContext context}) {
+    return _$applyFilterAsyncAction
+        .run(() => super.applyFilter(context: context));
+  }
+
+  final _$removeFilterAsyncAction = AsyncAction('_OrdersStore.removeFilter');
+
+  @override
+  Future<void> removeFilter({required BuildContext context}) {
+    return _$removeFilterAsyncAction
+        .run(() => super.removeFilter(context: context));
+  }
+
   @override
   String toString() {
     return '''
@@ -244,7 +290,9 @@ completedState: ${completedState},
 fileState: ${fileState},
 buttonState: ${buttonState},
 generateQRList: ${generateQRList},
-selectedTabIndex: ${selectedTabIndex}
+selectedTabIndex: ${selectedTabIndex},
+selectedCollege: ${selectedCollege},
+isFilterApplied: ${isFilterApplied}
     ''';
   }
 }

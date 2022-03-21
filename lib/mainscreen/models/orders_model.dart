@@ -36,11 +36,15 @@ class OrdersModel {
 
       final name = collegeToColList.keys
           .firstWhereOrNull((element) => tempName.contains(element));
-      print("$name, ${json['number'].toString()}");
+      // print("$name, ${json['number'].toString()}");
       // final name = collegeToColList.keys.map((e) => tempName.contains(e));
       colName = name ?? " ";
 
-      userInfo = UserInfoModel.fromMap(json: billingInfo);
+      userInfo = UserInfoModel.fromMap(
+        json: billingInfo,
+        buyerNote:
+            (json['buyerNote'] != null) ? json['buyerNote'] as String : "",
+      );
       addressModel = AddressModel.fromJson(address: billingInfo['address']);
       itemsModel = ItemsModel.fromJson(
         json: json['totals'],
@@ -53,7 +57,14 @@ class OrdersModel {
       colName = name ?? " ";
 
       userInfo = UserInfoModel.fromMap(
-          json: jsonDecode(json['userInfo'] as String) as Map<String, dynamic>);
+        json: jsonDecode(json['userInfo'] as String) as Map<String, dynamic>,
+        buyerNote: ((jsonDecode(json['userInfo'] as String)
+                    as Map<String, dynamic>)['buyerNote'] !=
+                null)
+            ? (jsonDecode(json['userInfo'] as String)
+                as Map<String, dynamic>)['buyerNote'] as String
+            : "",
+      );
       addressModel = AddressModel.fromJson(
           address:
               jsonDecode(json['address'] as String) as Map<String, dynamic>);

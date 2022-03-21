@@ -84,13 +84,17 @@ class OrdersRepository {
 
     final collegeName = collegeToColList[model.collegeName];
 
+    // print(userInfo);
+    // print(address);
+    // print(items);
+
     final _uploadUrl =
         'https://www.graduationgowns.ie/_functions/orderDummyStatus?userInfo=$userInfo&id=${model.id}&status=${model.orderStatus.toString()}&createdAt=${model.createdAt}&address=$address&items=$items&collegeName=$collegeName';
     final resp = await http.get(Uri.parse(_uploadUrl));
     if (resp.statusCode == 200) {
-      print("Successful");
+      // print("Successful");
     } else {
-      print('Not successful');
+      // print('Not successful');
     }
   }
 
@@ -99,14 +103,32 @@ class OrdersRepository {
         'https://www.graduationgowns.ie/_functions/orderqrdetail?id=$id';
     final resp = await http.get(Uri.parse(_url));
     if (resp.statusCode == 200) {
-      print(resp.body);
-      print(1);
       final data = jsonDecode(resp.body) as Map<String, dynamic>;
       final model = OrdersModel.fromJson(json: data);
       return model;
     } else {
       return null;
     }
+  }
+
+  Future<List<OrdersModel>> getFilteredOrders(
+      {required String query, required String status}) async {
+    final list = <OrdersModel>[];
+
+    final _url =
+        'https://www.graduationgowns.ie/_functions/filterOrderList?collegeName=$query&status=$status';
+
+    final resp = await http.get(Uri.parse(_url));
+    if (resp.statusCode == 200) {
+      final data = jsonDecode(resp.body) as List;
+      for (final i in data) {
+        final model = OrdersModel.fromJson(json: i);
+        list.add(model);
+      }
+    } else {
+      return <OrdersModel>[];
+    }
+    return list;
   }
 
   // Future<void> addCompletedData({required OrdersModel model}) async {

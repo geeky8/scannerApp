@@ -19,7 +19,7 @@ class OrderDetailCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: MediaQuery.of(context).size.width / 1.4,
-      padding: const EdgeInsets.all(10),
+      padding: const EdgeInsets.only(left: 10, top: 10, bottom: 10),
       decoration: BoxDecoration(
         shape: BoxShape.rectangle,
         borderRadius: BorderRadius.circular(10),
@@ -50,20 +50,27 @@ class OrderDetailCard extends StatelessWidget {
           const SizedBox(
             width: 40,
           ),
-          Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              CardText(text: model.itemsModel.number.toString(), label: '#'),
-              const SizedBox(
-                height: 4,
-              ),
-              CardText(text: model.userInfo.firstName, label: 'Name'),
-              const SizedBox(
-                height: 4,
-              ),
-              CardText(text: (model.createdAt.substring(0, 10)), label: 'Date'),
-            ],
+          Expanded(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                CardText(text: model.itemsModel.number.toString(), label: '#'),
+                const SizedBox(
+                  height: 4,
+                ),
+                CardText(text: model.userInfo.firstName, label: 'Name'),
+                const SizedBox(
+                  height: 4,
+                ),
+                CardText(
+                    text: (model.createdAt.substring(0, 10)), label: 'Date'),
+                const SizedBox(
+                  height: 4,
+                ),
+                CardText(text: model.collegeName, label: 'College'),
+              ],
+            ),
           ),
           // const SizedBox(
           //   width: 15,
