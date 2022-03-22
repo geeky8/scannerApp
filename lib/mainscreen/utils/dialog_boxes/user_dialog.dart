@@ -5,6 +5,7 @@ import 'package:scanner/enums/status.dart';
 import 'package:scanner/mainscreen/models/orders_model.dart';
 import 'package:scanner/mainscreen/store/orders/orders_store.dart';
 import 'package:scanner/mainscreen/utils/constants.dart';
+import 'package:scanner/mainscreen/utils/dialog_boxes/success_dialogbox.dart';
 
 class UserDialog extends StatelessWidget {
   const UserDialog({
@@ -131,6 +132,15 @@ class StateButton extends StatelessWidget {
             Navigator.pop(context);
             break;
         }
+        showDialog(
+            context: context,
+            builder: (context) {
+              // return UserDialog(
+              //   model: model,
+              //   store: store,
+              // );
+              return const SuccessDialog();
+            });
       },
       child: Container(
         width: MediaQuery.of(context).size.width / 1.5,

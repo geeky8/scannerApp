@@ -9,10 +9,12 @@ class ItemsModel {
     required this.type,
   });
 
-  factory ItemsModel.fromJson(
-      {required Map<String, dynamic> json,
-      required List<dynamic> lineItems,
-      required String number}) {
+  factory ItemsModel.fromJson({
+    required Map<String, dynamic> json,
+    required List<dynamic> lineItems,
+    required String number,
+    String? college,
+  }) {
     final productsList = <ProductModel>[];
     for (final items in lineItems) {
       final json = items as Map<String, dynamic>;
@@ -20,23 +22,52 @@ class ItemsModel {
       productsList.add(model);
     }
 
-    if (lineItems.isNotEmpty) {
+    if (lineItems.isNotEmpty && college != null) {
       final options = (lineItems[0] ?? {} as Map<String, dynamic>)['options']
           as List<dynamic>;
+
+      // print(number);
+      final grad = (options.length > 1)
+          ? ((options[1] as Map<String, dynamic>)['selection'] as String)
+              .split(' ')
+          : [];
+      final typeInit =
+          ((lineItems[0] as Map<String, dynamic>)['translatedName'] as String)
+              .split("-")
+              .last
+              .trim();
+      final typeList = typeInit.split(" ");
+      print(typeList);
+
+      String typeString = '';
+      print(typeInit);
+      for (int i = 0; i < typeList.length; i++) {
+        if (college == 'nui' && i > 2) {
+          break;
+        }
+        typeString = typeString + typeList[i].trim() + " ";
+      }
+      // print(((lineItems[0] as Map<String, dynamic>)['name'] as String));
+
       return ItemsModel(
         quantity: json['quantity'] as int,
         total: double.parse(json['total'].toString()),
         products: productsList,
         number: int.parse(number),
-        type: ((lineItems[0] as Map<String, dynamic>)['name'] as String)
-            .split('-')
-            .last,
+        // type: ((lineItems[0] as Map<String, dynamic>)['translatedName'])
+        //     .toString(),
+        // // .split('-')
+        // // .last,
+        type: typeString,
         height: (options[0] as Map<String, dynamic>)['selection'] ?? " ",
-        gradDate: (options.length > 1)
-            ? (options[1] as Map<String, dynamic>)['selection']
-            : " ",
+        gradDate:
+            (options.length > 1) ? '${grad[0]} ${grad[1]} ${grad[2]}' : " ",
       );
     } else if (lineItems.isEmpty) {
+      // final gradDate = (json['gradDate'] as String).split(" ");
+
+      // print(gradDate);
+
       return ItemsModel(
         quantity: json['quantity'] as int,
         total: double.parse(json['total'].toString()),
@@ -68,20 +99,37 @@ class ItemsModel {
     // );
   }
 
-  Map<String, dynamic> toMap() {
+  Map<String, dynamic> toMap({required String college}) {
     final list = [];
     for (final i in products) {
       final model = i.toMap();
       list.add(model);
     }
+
+    // final typeInit = type.split("-").last.trim();
+    // final typeList = typeInit.split(" ");
+    // print(typeList);
+
+    // String typeString = '';
+    // print(typeInit);
+    // for (int i = 0; i < typeList.length; i++) {
+    //   if (college == 'nui' && i > 2) {
+    //     break;
+    //   }
+    //   typeString = typeString + typeList[i].trim() + " ";
+    // }
+
     return {
       "quantity": quantity,
       "total": total,
       "products": list,
       "number": number,
       "gradDate": gradDate,
-      "height": height,
+      // "type":
+      //     '${type.trim().split(" ")[3].trim()} ${type.trim().split(" ")[4].trim()} ${type.trim().split(" ")[5].trim()}',
       "type": type,
+      "height": height,
+      // "json": json,
     };
   }
 
@@ -109,8 +157,8 @@ class ProductModel {
 
   Map<String, dynamic> toMap() {
     return {
-      "productId": productId,
       "price": price,
+      "productId": productId,
     };
   }
 

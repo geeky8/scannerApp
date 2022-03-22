@@ -43,13 +43,14 @@ class OrdersModel {
       userInfo = UserInfoModel.fromMap(
         json: billingInfo,
         buyerNote:
-            (json['buyerNote'] != null) ? json['buyerNote'] as String : "",
+            (json['buyerNote'] != null) ? json['buyerNote'] as String : null,
       );
       addressModel = AddressModel.fromJson(address: billingInfo['address']);
       itemsModel = ItemsModel.fromJson(
         json: json['totals'],
         lineItems: json['lineItems'],
         number: json['number'].toString(),
+        college: collegeToColList[name],
       );
     } else {
       final tempName = json['collegeName'] as String;
@@ -63,7 +64,7 @@ class OrdersModel {
                 null)
             ? (jsonDecode(json['userInfo'] as String)
                 as Map<String, dynamic>)['buyerNote'] as String
-            : "",
+            : null,
       );
       addressModel = AddressModel.fromJson(
           address:
@@ -90,17 +91,17 @@ class OrdersModel {
     );
   }
 
-  Map<String, dynamic> toMap() {
-    // print(itemsModel.toMap()..toString());
+  // Map<String, dynamic> toMap() {
+  //   // print(itemsModel.toMap()..toString());
 
-    return {
-      "_dateCreated": createdAt,
-      "_id": id,
-      "address": jsonEncode(addressModel.toMap()),
-      "items": jsonEncode(itemsModel.toMap()),
-      "orderStatus": orderStatus,
-    };
-  }
+  //   return {
+  //     "_dateCreated": createdAt,
+  //     "_id": id,
+  //     "address": jsonEncode(addressModel.toMap()),
+  //     "items": jsonEncode(itemsModel.toMap(college: )),
+  //     "orderStatus": orderStatus,
+  //   };
+  // }
 
   OrdersModel copyWith({String? status, bool? isCheck}) {
     return OrdersModel(

@@ -78,21 +78,26 @@ class OrdersRepository {
   // }
 
   Future<void> moveData({required OrdersModel model}) async {
-    final userInfo = jsonEncode(model.userInfo.toMap());
+    final userInfo = jsonEncode(
+        model.userInfo.toMap(type: model.itemsModel.type.split("-").last));
     final address = jsonEncode(model.addressModel.toMap());
-    final items = jsonEncode(model.itemsModel.toMap());
+    String items = jsonEncode(model.itemsModel
+        .toMap(college: collegeToColList[model.collegeName].toString()));
 
     final collegeName = collegeToColList[model.collegeName];
 
     // print(userInfo);
     // print(address);
     // print(items);
+    // if (items[items.length - 1] != "}") {
+    //   items = '$items"}';
+    // }
 
     final _uploadUrl =
         'https://www.graduationgowns.ie/_functions/orderDummyStatus?userInfo=$userInfo&id=${model.id}&status=${model.orderStatus.toString()}&createdAt=${model.createdAt}&address=$address&items=$items&collegeName=$collegeName';
     final resp = await http.get(Uri.parse(_uploadUrl));
     if (resp.statusCode == 200) {
-      // print("Successful");
+      print(resp.body);
     } else {
       // print('Not successful');
     }

@@ -18,14 +18,14 @@ class UserInfoModel {
     );
   }
 
-  Map<String, dynamic> toMap() {
+  Map<String, dynamic> toMap({required String type}) {
     return {
       'firstName': firstName,
       'lastName': lastName,
       'phone': phone,
       'email': email,
       'buyerNote': buyerNote,
-
+      // 'type': "${type.split("-").first.substring(0, 20)}",
       // 'firstName': jsonEncode(firstName),
       // 'lastName': jsonEncode(lastName),
       // 'phone': jsonEncode(phone),
