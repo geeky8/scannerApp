@@ -164,9 +164,8 @@ class RemoveFilterButton extends StatelessWidget {
         store.removeFilter(context: contextParent);
       },
       child: CircleAvatar(
-        // padding: const EdgeInsets.symmetric(horizontal: 35, vertical: 15),
+        radius: 30,
         backgroundColor: primaryColor,
-        radius: 15,
         child: Observer(builder: (_) {
           final state = store.isFilterApplied;
 
@@ -178,10 +177,28 @@ class RemoveFilterButton extends StatelessWidget {
             case ButtonState.SUCCESS:
               return const SizedBox();
             case ButtonState.APPLIED:
-              return const Icon(
-                Icons.remove,
-                size: 15,
-                color: Colors.white,
+              return Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: RichText(
+                  textAlign: TextAlign.center,
+                  text: const TextSpan(
+                      text: 'Remove',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      children: [
+                        TextSpan(
+                          text: 'Filter',
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ]),
+                ),
               );
           }
         }),

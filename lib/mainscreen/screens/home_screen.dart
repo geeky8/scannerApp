@@ -8,6 +8,7 @@ import 'package:scanner/enums/file_state.dart';
 import 'package:scanner/enums/store_state.dart';
 import 'package:scanner/mainscreen/models/orders_model.dart';
 import 'package:scanner/mainscreen/screens/order_detail_screen.dart';
+import 'package:scanner/mainscreen/store/login/login_store.dart';
 
 import 'package:scanner/mainscreen/store/orders/orders_store.dart';
 import 'package:scanner/mainscreen/utils/constants.dart';
@@ -29,155 +30,370 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
-    final store = context.read<OrdersStore>();
-    return DefaultTabController(
-      length: 3,
-      child: Scaffold(
-        backgroundColor: secondaryColor,
-        appBar: AppBar(
-          elevation: 0,
-          toolbarHeight: 0,
-          backgroundColor: primaryColor,
-        ),
-        extendBodyBehindAppBar: true,
-        body: Column(
-          children: [
-            Container(
-              decoration: const BoxDecoration(color: primaryColor),
-              child: SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const SizedBox(height: 50),
-                    Observer(builder: (_) {
-                      final state = store.fileState;
+    final loginStore = context.read<LoginStore>();
+    return Provider<OrdersStore>(
+        create: (_) => OrdersStore()..init(),
+        builder: (context, _) {
+          final store = context.read<OrdersStore>();
 
-                      switch (state) {
-                        case FileState.SELECTED:
-                          return Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 20),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                const Text(
-                                  'Select Files',
-                                  style: TextStyle(
-                                      color: Colors.white, fontSize: 22),
-                                ),
-                                IconButton(
-                                    onPressed: () {
-                                      store.fileState = FileState.NORMAL;
-                                      store.generateQRList.clear();
-                                    },
-                                    icon: const Icon(
-                                      Icons.close,
-                                      color: Colors.white,
-                                      size: 22,
-                                    )),
-                              ],
-                            ),
-                          );
-                        case FileState.NORMAL:
-                          return Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 20),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                const Text(
-                                  'Scanner',
-                                  style: TextStyle(
-                                      color: Colors.white, fontSize: 22),
-                                ),
-                                Row(
-                                  children: [
-                                    const FilterButton(),
-                                    const SizedBox(
-                                      width: 7,
-                                    ),
-                                    IconButton(
-                                      onPressed: () {
-                                        store.fileState = FileState.SELECTED;
-                                      },
-                                      icon: const Icon(
-                                        Icons.picture_as_pdf,
-                                        color: Colors.white,
-                                        size: 22,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                          );
-                      }
-                    }),
-                    const SizedBox(height: 20),
-                    TabBar(
-                        indicatorColor: Colors.white,
-                        indicatorSize: TabBarIndicatorSize.tab,
-                        labelStyle: const TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.bold,
-                        ),
-                        onTap: (index) {
-                          store.selectedTabIndex = index;
-                        },
-                        tabs: const [
-                          Tab(
-                            text: 'New',
-                          ),
-                          Tab(
-                            text: 'Pending',
-                          ),
-                          Tab(
-                            text: 'Completed',
-                          ),
-                        ]),
-                  ],
-                ),
+          return DefaultTabController(
+            length: 3,
+            child: Scaffold(
+              backgroundColor: secondaryColor,
+              appBar: AppBar(
+                elevation: 0,
+                toolbarHeight: 0,
+                backgroundColor: primaryColor,
               ),
-            ),
-            const SizedBox(
-              height: 5,
-            ),
-            Expanded(
-              child:
-                  TabBarView(physics: const BouncingScrollPhysics(), children: [
-                Observer(builder: (_) {
-                  // final ordersList = store.newOrders;
-                  final state = store.newState;
-                  // final _repository = OrdersRepository();
-                  switch (state) {
-                    case StoreState.LOADING:
-                      return const Center(
-                        child: SizedBox(
-                          height: 50,
-                          width: 50,
-                          child: CircularProgressIndicator(
-                            color: primaryColor,
-                          ),
-                        ),
-                      );
-                    case StoreState.SUCCESS:
-                      return RefreshIndicator(
-                        onRefresh: () async {
-                          await store.getNewOrders();
-                        },
-                        color: primaryColor,
-                        child: Observer(builder: (_) {
-                          final fileState = store.fileState;
+              extendBodyBehindAppBar: true,
+              body: Column(
+                children: [
+                  Container(
+                    decoration: const BoxDecoration(color: primaryColor),
+                    child: SingleChildScrollView(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const SizedBox(height: 50),
+                          Observer(builder: (_) {
+                            final state = store.fileState;
 
-                          switch (fileState) {
-                            case FileState.SELECTED:
-                              return Stack(
-                                children: [
-                                  // OrdersList(
-                                  //   ordersList: ordersList,
-                                  //   store: store,
-                                  //   fileState: fileState,
-                                  // ),
-                                  Observer(builder: (_) {
-                                    final ordersList = store.newOrders;
+                            switch (state) {
+                              case FileState.SELECTED:
+                                return Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 20),
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      const Text(
+                                        'Select Files',
+                                        style: TextStyle(
+                                            color: Colors.white, fontSize: 22),
+                                      ),
+                                      IconButton(
+                                          onPressed: () {
+                                            store.fileState = FileState.NORMAL;
+                                            store.generateQRList.clear();
+                                          },
+                                          icon: const Icon(
+                                            Icons.close,
+                                            color: Colors.white,
+                                            size: 22,
+                                          )),
+                                    ],
+                                  ),
+                                );
+                              case FileState.NORMAL:
+                                return Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 20),
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      const Text(
+                                        'Scanner',
+                                        style: TextStyle(
+                                            color: Colors.white, fontSize: 22),
+                                      ),
+                                      Row(
+                                        children: [
+                                          const FilterButton(),
+                                          const SizedBox(
+                                            width: 7,
+                                          ),
+                                          IconButton(
+                                            onPressed: () {
+                                              store.fileState =
+                                                  FileState.SELECTED;
+                                            },
+                                            icon: const Icon(
+                                              Icons.picture_as_pdf,
+                                              color: Colors.white,
+                                              size: 22,
+                                            ),
+                                          ),
+                                          // const SizedBox(
+                                          //   width: 7,
+                                          // ),
+                                          IconButton(
+                                            onPressed: () async {
+                                              await loginStore.signOut(
+                                                  context: context);
+                                            },
+                                            icon: const Icon(
+                                              Icons.login,
+                                              color: Colors.white,
+                                              size: 22,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                );
+                            }
+                          }),
+                          const SizedBox(height: 20),
+                          TabBar(
+                              indicatorColor: Colors.white,
+                              indicatorSize: TabBarIndicatorSize.tab,
+                              labelStyle: const TextStyle(
+                                fontSize: 15,
+                                fontWeight: FontWeight.bold,
+                              ),
+                              onTap: (index) {
+                                store.selectedTabIndex = index;
+                              },
+                              tabs: const [
+                                Tab(
+                                  text: 'New',
+                                ),
+                                Tab(
+                                  text: 'Pending',
+                                ),
+                                Tab(
+                                  text: 'Completed',
+                                ),
+                              ]),
+                        ],
+                      ),
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 5,
+                  ),
+                  Expanded(
+                    child: TabBarView(
+                        physics: const BouncingScrollPhysics(),
+                        children: [
+                          Observer(builder: (_) {
+                            // final ordersList = store.newOrders;
+                            final state = store.newState;
+                            // final _repository = OrdersRepository();
+                            switch (state) {
+                              case StoreState.LOADING:
+                                return const Center(
+                                  child: SizedBox(
+                                    height: 50,
+                                    width: 50,
+                                    child: CircularProgressIndicator(
+                                      color: primaryColor,
+                                    ),
+                                  ),
+                                );
+                              case StoreState.SUCCESS:
+                                return RefreshIndicator(
+                                  onRefresh: () async {
+                                    await store.getNewOrders();
+                                  },
+                                  color: primaryColor,
+                                  child: Observer(builder: (_) {
+                                    final fileState = store.fileState;
+
+                                    switch (fileState) {
+                                      case FileState.SELECTED:
+                                        return Stack(
+                                          children: [
+                                            // OrdersList(
+                                            //   ordersList: ordersList,
+                                            //   store: store,
+                                            //   fileState: fileState,
+                                            // ),
+                                            Observer(builder: (_) {
+                                              final ordersList =
+                                                  store.newOrders;
+
+                                              return ListView.builder(
+                                                  physics:
+                                                      const BouncingScrollPhysics(),
+                                                  itemCount: ordersList.length,
+                                                  itemBuilder:
+                                                      (context, index) {
+                                                    final model =
+                                                        ordersList[index];
+                                                    // store.qrKey = GlobalKey();
+                                                    return GestureDetector(
+                                                      onTap: () async {
+                                                        Navigator.push(
+                                                            context,
+                                                            MaterialPageRoute(
+                                                                builder:
+                                                                    (context) =>
+                                                                        Provider
+                                                                            .value(
+                                                                          value:
+                                                                              store,
+                                                                          child:
+                                                                              OrderDetailScreen(
+                                                                            model:
+                                                                                model,
+                                                                          ),
+                                                                        )));
+                                                      },
+                                                      child: Observer(
+                                                          builder: (_) {
+                                                        final fileState =
+                                                            store.fileState;
+
+                                                        switch (fileState) {
+                                                          case FileState
+                                                              .SELECTED:
+                                                            return Padding(
+                                                              padding:
+                                                                  const EdgeInsets
+                                                                      .all(8.0),
+                                                              child:
+                                                                  SelectedDetailsCard(
+                                                                      model:
+                                                                          model,
+                                                                      store:
+                                                                          store),
+                                                            );
+                                                          case FileState.NORMAL:
+                                                            return Padding(
+                                                              padding:
+                                                                  const EdgeInsets
+                                                                      .all(8.0),
+                                                              child:
+                                                                  OrderDetailCard(
+                                                                model: model,
+                                                                store: store,
+                                                              ),
+                                                            );
+                                                        }
+                                                      }),
+                                                    );
+                                                  });
+                                            }),
+                                            Positioned(
+                                              bottom: 20,
+                                              left: MediaQuery.of(context)
+                                                      .size
+                                                      .width /
+                                                  6,
+                                              child:
+                                                  GenrateQRButton(store: store),
+                                            ),
+                                          ],
+                                        );
+                                      case FileState.NORMAL:
+                                        // return OrdersList(
+                                        //   ordersList: ordersList,
+                                        //   store: store,
+                                        //   fileState: fileState,
+                                        // );
+                                        return Observer(builder: (_) {
+                                          final ordersList = store.newOrders;
+
+                                          return ListView.builder(
+                                              physics:
+                                                  const BouncingScrollPhysics(),
+                                              itemCount: ordersList.length,
+                                              itemBuilder: (context, index) {
+                                                final model = ordersList[index];
+                                                // store.qrKey = GlobalKey();
+                                                return GestureDetector(
+                                                  onTap: () async {
+                                                    Navigator.push(
+                                                        context,
+                                                        MaterialPageRoute(
+                                                            builder:
+                                                                (context) =>
+                                                                    Provider
+                                                                        .value(
+                                                                      value:
+                                                                          store,
+                                                                      child:
+                                                                          OrderDetailScreen(
+                                                                        model:
+                                                                            model,
+                                                                      ),
+                                                                    )));
+                                                  },
+                                                  child: Observer(builder: (_) {
+                                                    final fileState =
+                                                        store.fileState;
+
+                                                    switch (fileState) {
+                                                      case FileState.SELECTED:
+                                                        return Padding(
+                                                          padding:
+                                                              const EdgeInsets
+                                                                  .all(8.0),
+                                                          child:
+                                                              SelectedDetailsCard(
+                                                                  model: model,
+                                                                  store: store),
+                                                        );
+                                                      case FileState.NORMAL:
+                                                        return Padding(
+                                                          padding:
+                                                              const EdgeInsets
+                                                                  .all(8.0),
+                                                          child:
+                                                              OrderDetailCard(
+                                                            model: model,
+                                                            store: store,
+                                                          ),
+                                                        );
+                                                    }
+                                                  }),
+                                                );
+                                              });
+                                        });
+                                    }
+                                  }),
+                                );
+                              case StoreState.ERROR:
+                                // return const SizedBox();
+                                return Center(
+                                    child: SizedBox(
+                                  height: 150,
+                                  child: Image.asset(
+                                    'assets/images/empty.png',
+                                    fit: BoxFit.fill,
+                                  ),
+                                ));
+                              case StoreState.EMPTY:
+                                return Center(
+                                    child: SizedBox(
+                                  height: 150,
+                                  child: Image.asset(
+                                    'assets/images/empty.png',
+                                    fit: BoxFit.fill,
+                                  ),
+                                ));
+                            }
+                          }),
+                          // const Center(child: Text('Pending')),
+                          Observer(builder: (_) {
+                            final state = store.pendingState;
+                            switch (state) {
+                              case StoreState.LOADING:
+                                return const Center(
+                                  child: SizedBox(
+                                    height: 50,
+                                    width: 50,
+                                    child: CircularProgressIndicator(
+                                      color: primaryColor,
+                                    ),
+                                  ),
+                                );
+                              case StoreState.SUCCESS:
+                                return RefreshIndicator(
+                                  onRefresh: () async {
+                                    await store.getPendingOrders();
+                                  },
+                                  color: primaryColor,
+                                  // child: OrdersList(
+                                  //     ordersList: ordersList,
+                                  //     fileState: FileState.NORMAL,
+                                  //     store: store),
+                                  child: Observer(builder: (_) {
+                                    final ordersList = store.pendingOrders;
 
                                     return ListView.builder(
                                         physics: const BouncingScrollPhysics(),
@@ -227,297 +443,173 @@ class _HomeState extends State<Home> {
                                           );
                                         });
                                   }),
-                                  Positioned(
-                                    bottom: 20,
-                                    left: MediaQuery.of(context).size.width / 6,
-                                    child: GenrateQRButton(store: store),
+                                );
+                              case StoreState.ERROR:
+                                return const SizedBox();
+                              case StoreState.EMPTY:
+                                return Center(
+                                    child: SizedBox(
+                                  height: 150,
+                                  child: Image.asset(
+                                    'assets/images/empty.png',
+                                    fit: BoxFit.fill,
                                   ),
-                                ],
+                                ));
+                            }
+                          }),
+                          // const Center(child: Text('Completed')),
+                          Observer(builder: (_) {
+                            // final ordersList = store.completedOrders;
+
+                            final state = store.completedState;
+                            switch (state) {
+                              case StoreState.LOADING:
+                                return const Center(
+                                  child: SizedBox(
+                                    height: 50,
+                                    width: 50,
+                                    child: CircularProgressIndicator(
+                                      color: primaryColor,
+                                    ),
+                                  ),
+                                );
+                              case StoreState.SUCCESS:
+                                return RefreshIndicator(
+                                  onRefresh: () async {
+                                    await store.getCompletedOrders();
+                                  },
+                                  color: primaryColor,
+                                  // child: OrdersList(
+                                  //   fileState: FileState.NORMAL,
+                                  //   store: store,
+                                  // ),
+                                  child: Observer(builder: (_) {
+                                    final ordersList = store.completedOrders;
+
+                                    return ListView.builder(
+                                        physics: const BouncingScrollPhysics(),
+                                        itemCount: ordersList.length,
+                                        itemBuilder: (context, index) {
+                                          final model = ordersList[index];
+                                          // store.qrKey = GlobalKey();
+                                          return GestureDetector(
+                                            onTap: () async {
+                                              Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          Provider.value(
+                                                            value: store,
+                                                            child:
+                                                                OrderDetailScreen(
+                                                              model: model,
+                                                            ),
+                                                          )));
+                                            },
+                                            child: Observer(builder: (_) {
+                                              final fileState = store.fileState;
+
+                                              switch (fileState) {
+                                                case FileState.SELECTED:
+                                                  return Padding(
+                                                    padding:
+                                                        const EdgeInsets.all(
+                                                            8.0),
+                                                    child: SelectedDetailsCard(
+                                                        model: model,
+                                                        store: store),
+                                                  );
+                                                case FileState.NORMAL:
+                                                  return Padding(
+                                                    padding:
+                                                        const EdgeInsets.all(
+                                                            8.0),
+                                                    child: OrderDetailCard(
+                                                      model: model,
+                                                      store: store,
+                                                    ),
+                                                  );
+                                              }
+                                            }),
+                                          );
+                                        });
+                                  }),
+                                );
+                              case StoreState.ERROR:
+                                return const SizedBox();
+                              case StoreState.EMPTY:
+                                return Center(
+                                    child: SizedBox(
+                                  height: 150,
+                                  child: Image.asset(
+                                    'assets/images/empty.png',
+                                    fit: BoxFit.fill,
+                                  ),
+                                ));
+                            }
+                          }),
+                        ]),
+                  ),
+                ],
+              ),
+              floatingActionButton: Observer(builder: (_) {
+                final state = store.fileState;
+
+                switch (state) {
+                  case FileState.SELECTED:
+                    return const SizedBox();
+                  case FileState.NORMAL:
+                    return FloatingActionButton(
+                      onPressed: () async {
+                        final model = await store.qrScanner();
+                        showDialog(
+                            context: context,
+                            builder: (context) {
+                              return UserDialog(
+                                model: model,
+                                store: store,
                               );
-                            case FileState.NORMAL:
-                              // return OrdersList(
-                              //   ordersList: ordersList,
-                              //   store: store,
-                              //   fileState: fileState,
-                              // );
-                              return Observer(builder: (_) {
-                                final ordersList = store.newOrders;
-
-                                return ListView.builder(
-                                    physics: const BouncingScrollPhysics(),
-                                    itemCount: ordersList.length,
-                                    itemBuilder: (context, index) {
-                                      final model = ordersList[index];
-                                      // store.qrKey = GlobalKey();
-                                      return GestureDetector(
-                                        onTap: () async {
-                                          Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      Provider.value(
-                                                        value: store,
-                                                        child:
-                                                            OrderDetailScreen(
-                                                          model: model,
-                                                        ),
-                                                      )));
-                                        },
-                                        child: Observer(builder: (_) {
-                                          final fileState = store.fileState;
-
-                                          switch (fileState) {
-                                            case FileState.SELECTED:
-                                              return Padding(
-                                                padding:
-                                                    const EdgeInsets.all(8.0),
-                                                child: SelectedDetailsCard(
-                                                    model: model, store: store),
-                                              );
-                                            case FileState.NORMAL:
-                                              return Padding(
-                                                padding:
-                                                    const EdgeInsets.all(8.0),
-                                                child: OrderDetailCard(
-                                                  model: model,
-                                                  store: store,
-                                                ),
-                                              );
-                                          }
-                                        }),
-                                      );
-                                    });
-                              });
-                          }
-                        }),
-                      );
-                    case StoreState.ERROR:
-                      // return const SizedBox();
-                      return Center(
-                          child: SizedBox(
-                        height: 150,
-                        child: Image.asset(
-                          'assets/images/empty.png',
-                          fit: BoxFit.fill,
-                        ),
-                      ));
-                    case StoreState.EMPTY:
-                      return Center(
-                          child: SizedBox(
-                        height: 150,
-                        child: Image.asset(
-                          'assets/images/empty.png',
-                          fit: BoxFit.fill,
-                        ),
-                      ));
-                  }
-                }),
-                // const Center(child: Text('Pending')),
-                Observer(builder: (_) {
-                  final state = store.pendingState;
-                  switch (state) {
-                    case StoreState.LOADING:
-                      return const Center(
-                        child: SizedBox(
-                          height: 50,
-                          width: 50,
-                          child: CircularProgressIndicator(
-                            color: primaryColor,
-                          ),
-                        ),
-                      );
-                    case StoreState.SUCCESS:
-                      return RefreshIndicator(
-                        onRefresh: () async {
-                          await store.getPendingOrders();
-                        },
-                        color: primaryColor,
-                        // child: OrdersList(
-                        //     ordersList: ordersList,
-                        //     fileState: FileState.NORMAL,
-                        //     store: store),
-                        child: Observer(builder: (_) {
-                          final ordersList = store.pendingOrders;
-
-                          return ListView.builder(
-                              physics: const BouncingScrollPhysics(),
-                              itemCount: ordersList.length,
-                              itemBuilder: (context, index) {
-                                final model = ordersList[index];
-                                // store.qrKey = GlobalKey();
-                                return GestureDetector(
-                                  onTap: () async {
-                                    Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) =>
-                                                Provider.value(
-                                                  value: store,
-                                                  child: OrderDetailScreen(
-                                                    model: model,
-                                                  ),
-                                                )));
-                                  },
-                                  child: Observer(builder: (_) {
-                                    final fileState = store.fileState;
-
-                                    switch (fileState) {
-                                      case FileState.SELECTED:
-                                        return Padding(
-                                          padding: const EdgeInsets.all(8.0),
-                                          child: SelectedDetailsCard(
-                                              model: model, store: store),
-                                        );
-                                      case FileState.NORMAL:
-                                        return Padding(
-                                          padding: const EdgeInsets.all(8.0),
-                                          child: OrderDetailCard(
-                                            model: model,
-                                            store: store,
-                                          ),
-                                        );
-                                    }
-                                  }),
-                                );
-                              });
-                        }),
-                      );
-                    case StoreState.ERROR:
-                      return const SizedBox();
-                    case StoreState.EMPTY:
-                      return Center(
-                          child: SizedBox(
-                        height: 150,
-                        child: Image.asset(
-                          'assets/images/empty.png',
-                          fit: BoxFit.fill,
-                        ),
-                      ));
-                  }
-                }),
-                // const Center(child: Text('Completed')),
-                Observer(builder: (_) {
-                  // final ordersList = store.completedOrders;
-
-                  final state = store.completedState;
-                  switch (state) {
-                    case StoreState.LOADING:
-                      return const Center(
-                        child: SizedBox(
-                          height: 50,
-                          width: 50,
-                          child: CircularProgressIndicator(
-                            color: primaryColor,
-                          ),
-                        ),
-                      );
-                    case StoreState.SUCCESS:
-                      return RefreshIndicator(
-                        onRefresh: () async {
-                          await store.getCompletedOrders();
-                        },
-                        color: primaryColor,
-                        // child: OrdersList(
-                        //   fileState: FileState.NORMAL,
-                        //   store: store,
-                        // ),
-                        child: Observer(builder: (_) {
-                          final ordersList = store.completedOrders;
-
-                          return ListView.builder(
-                              physics: const BouncingScrollPhysics(),
-                              itemCount: ordersList.length,
-                              itemBuilder: (context, index) {
-                                final model = ordersList[index];
-                                // store.qrKey = GlobalKey();
-                                return GestureDetector(
-                                  onTap: () async {
-                                    Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) =>
-                                                Provider.value(
-                                                  value: store,
-                                                  child: OrderDetailScreen(
-                                                    model: model,
-                                                  ),
-                                                )));
-                                  },
-                                  child: Observer(builder: (_) {
-                                    final fileState = store.fileState;
-
-                                    switch (fileState) {
-                                      case FileState.SELECTED:
-                                        return Padding(
-                                          padding: const EdgeInsets.all(8.0),
-                                          child: SelectedDetailsCard(
-                                              model: model, store: store),
-                                        );
-                                      case FileState.NORMAL:
-                                        return Padding(
-                                          padding: const EdgeInsets.all(8.0),
-                                          child: OrderDetailCard(
-                                            model: model,
-                                            store: store,
-                                          ),
-                                        );
-                                    }
-                                  }),
-                                );
-                              });
-                        }),
-                      );
-                    case StoreState.ERROR:
-                      return const SizedBox();
-                    case StoreState.EMPTY:
-                      return Center(
-                          child: SizedBox(
-                        height: 150,
-                        child: Image.asset(
-                          'assets/images/empty.png',
-                          fit: BoxFit.fill,
-                        ),
-                      ));
-                  }
-                }),
-              ]),
+                              // return const FailureDialog();
+                              // return const SuccessDialog();
+                            });
+                      },
+                      child: const Icon(
+                        Icons.camera,
+                        color: Colors.white,
+                        size: 20,
+                      ),
+                      backgroundColor: primaryColor,
+                    );
+                }
+              }),
             ),
-          ],
-        ),
-        floatingActionButton: Observer(builder: (_) {
-          final state = store.fileState;
-
-          switch (state) {
-            case FileState.SELECTED:
-              return const SizedBox();
-            case FileState.NORMAL:
-              return FloatingActionButton(
-                onPressed: () async {
-                  final model = await store.qrScanner();
-                  showDialog(
-                      context: context,
-                      builder: (context) {
-                        return UserDialog(
-                          model: model,
-                          store: store,
-                        );
-                        // return const FailureDialog();
-                        // return const SuccessDialog();
-                      });
-                },
-                child: const Icon(
-                  Icons.camera,
-                  color: Colors.white,
-                  size: 20,
-                ),
-                backgroundColor: primaryColor,
-              );
-          }
-        }),
-      ),
-    );
+          );
+        });
   }
 }
+
+// class Logout extends StatelessWidget {
+//   const Logout({
+//     Key? key,
+//     required this.loginStore,
+//   }) : super(key: key);
+
+//   final LoginStore loginStore;
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return IconButton(
+//       onPressed: () async {
+//         await loginStore.signOut();
+//       },
+//       icon: const Icon(
+//         Icons.login,
+//         color: Colors.white,
+//         size: 22,
+//       ),
+//     );
+//   }
+// }
 
 // class UserDialog extends StatelessWidget {
 //   const UserDialog({

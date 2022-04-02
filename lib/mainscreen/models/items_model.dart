@@ -37,10 +37,7 @@ class ItemsModel {
               .last
               .trim();
       final typeList = typeInit.split(" ");
-      print(typeList);
-
       String typeString = '';
-      print(typeInit);
       for (int i = 0; i < typeList.length; i++) {
         if (college == 'nui' && i > 2) {
           break;
@@ -48,6 +45,14 @@ class ItemsModel {
         typeString = typeString + typeList[i].trim() + " ";
       }
       // print(((lineItems[0] as Map<String, dynamic>)['name'] as String));
+
+      String graduationDate = '';
+
+      if (grad.isNotEmpty) {
+        for (final i in grad) {
+          graduationDate = graduationDate + i + ' ';
+        }
+      }
 
       return ItemsModel(
         quantity: json['quantity'] as int,
@@ -60,8 +65,7 @@ class ItemsModel {
         // // .last,
         type: typeString,
         height: (options[0] as Map<String, dynamic>)['selection'] ?? " ",
-        gradDate:
-            (options.length > 1) ? '${grad[0]} ${grad[1]} ${grad[2]}' : " ",
+        gradDate: graduationDate,
       );
     } else if (lineItems.isEmpty) {
       // final gradDate = (json['gradDate'] as String).split(" ");
